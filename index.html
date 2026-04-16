@@ -816,7 +816,7 @@
    Получить: https://console.groq.com/
    ================================================================ */
 const CFG = {
-    GROQ_KEY  : 'ВСТАВЬТЕ_GROQ_API_KEY',
+    GROQ_KEY  : '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',
     GROQ_MODEL: 'llama-3.3-70b-versatile'
 };
 
@@ -1196,8 +1196,8 @@ async function sendAI(mode='d') {
 
 async function callGroq(userMsg, mode='d') {
     if (S.busy) return;
-    if (!CFG.GROQ_KEY || CFG.GROQ_KEY.startsWith('ВСТАВЬТЕ')) {
-        toast('Вставьте Groq API Key в объект CFG', 'err', 5000);
+    if (!CFG.GROQ_KEY || CFG.GROQ_KEY.startsWith('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')) {
+        toast('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', 'err', 5000);
         return;
     }
     S.busy = true;
