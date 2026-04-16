@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#D4A017">
+    <meta name="description" content="ZORNET - Твой интернет. Твой свет. Современный многофункциональный поисковый портал.">
+    <title>ZORNET - Твой интернет. Твой свет.</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
+    <!-- Основные стили -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ========== ХЕДЕР ========== -->
+    <header id="header" class="header">
+        <div class="header-container">
+            <!-- Левая часть: Логотип -->
+            <div class="header-left">
+                <a href="#" class="logo" onclick="showSection('home'); return false;">
+                    <span class="logo-text">Z<span class="logo-star">★</span>RNET</span>
+                </a>
+            </div>
+
+            <!-- Центр: Поисковая строка (скрыта на главной) -->
+            <div class="header-center" id="headerSearch">
+                <div class="search-box-header">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="headerSearchInput" data-i18n-placeholder="search_placeholder" placeholder="Поиск в интернете...">
+                    <button class="voice-btn-header" onclick="startVoiceSearch()" title="Голосовой поиск">🎤</button>
+                </div>
+            </div>
+
+            <!-- Правая часть: Иконки управления -->
+            <div class="header-right">
+                <!-- Выбор языка -->
+                <div class="dropdown">
+                    <button class="icon-btn" id="langBtn" title="Язык / Language">🌐</button>
+                    <div class="dropdown-menu" id="langMenu">
+                        <button onclick="applyLang('be')">🇧🇾 Беларускі</button>
+                        <button onclick="applyLang('ru')">🇷🇺 Русский</button>
+                        <button onclick="applyLang('en')">🇬🇧 English</button>
+                    </div>
+                </div>
+
+                <!-- Переключатель темы -->
+                <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Тема">
+                    <span id="themeIcon">🌙</span>
+                </button>
+
+                <!-- Кнопка ЗОРКА ИИ -->
+                <button class="icon-btn zorka-btn" onclick="showSection('ai')" title="ЗОРКА ИИ">★</button>
+
+                <!-- Гамбургер меню (мобильный) -->
+                <button class="icon-btn hamburger" id="hamburgerBtn" onclick="toggleDrawer()">☰</button>
+            </div>
+        </div>
+
+        <!-- Навигация (десктоп) -->
+        <nav class="header-nav">
+            <a href="#" onclick="showSection('home'); return false;" data-i18n="nav_home">Главная</a>
+            <a href="#" onclick="showSection('news'); return false;" data-i18n="nav_news">Новости</a>
+            <a href="#" onclick="showSection('weather'); return false;" data-i18n="nav_weather">Погода</a>
+            <a href="#" onclick="showSection('maps'); return false;" data-i18n="nav_maps">Карты</a>
+            <a href="#" onclick="showSection('translate'); return false;" data-i18n="nav_translate">Переводчик</a>
+            <a href="#" onclick="showSection('currency'); return false;" data-i18n="nav_currency">Валюты</a>
+            <a href="#" onclick="showSection('ai'); return false;" data-i18n="nav_ai">ЗОРКА</a>
+        </nav>
+    </header>
+
+    <!-- ========== МОБИЛЬНЫЙ DRAWER ========== -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="logo-text">Z<span class="logo-star">★</span>RNET</span>
+            <button onclick="toggleDrawer()">✕</button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="#" onclick="showSection('home'); toggleDrawer(); return false;" data-i18n="nav_home">Главная</a>
+            <a href="#" onclick="showSection('news'); toggleDrawer(); return false;" data-i18n="nav_news">Новости</a>
+            <a href="#" onclick="showSection('weather'); toggleDrawer(); return false;" data-i18n="nav_weather">Погода</a>
+            <a href="#" onclick="showSection('maps'); toggleDrawer(); return false;" data-i18n="nav_maps">Карты</a>
+            <a href="#" onclick="showSection('translate'); toggleDrawer(); return false;" data-i18n="nav_translate">Переводчик</a>
+            <a href="#" onclick="showSection('currency'); toggleDrawer(); return false;" data-i18n="nav_currency">Валюты</a>
+            <a href="#" onclick="showSection('ai'); toggleDrawer(); return false;" data-i18n="nav_ai">ЗОРКА ИИ</a>
+        </nav>
+    </div>
+
+    <!-- ========== КОНТЕЙНЕР СЕКЦИЙ ========== -->
+    <main class="main-container">
+
+        <!-- ========== ГЛАВНАЯ СТРАНИЦА ========== -->
+        <section id="section-home" class="section active">
+            <!-- HERO -->
+            <div class="hero">
+                <div class="logo-hero" ondblclick="toggleFocusMode()">
+                    <span class="logo-text-hero">Z<span class="logo-star-hero">★</span>RNET</span>
+                </div>
+                <p class="slogan" id="slogan" data-i18n="slogan">Твой интернет. Твой свет.</p>
+
+                <!-- Поисковая строка -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="mainSearchInput" data-i18n-placeholder="search_placeholder" placeholder="Поиск в интернете..." onkeypress="if(event.key==='Enter') performSearch()">
+                        <button class="voice-btn" onclick="startVoiceSearch()" title="Голосовой поиск">🎤</button>
+                    </div>
+                    
+                    <!-- Кнопки поиска -->
+                    <div class="search-buttons">
+                        <button class="btn-primary" onclick="performSearch()" data-i18n="btn_search">Найти</button>
+                        <button class="btn-secondary" onclick="luckySearch()" data-i18n="btn_lucky">Мне повезёт!</button>
+                    </div>
+
+                    <!-- Вкладки типов поиска -->
+                    <div class="search-tabs">
+                        <button class="search-tab active" data-tab="web" onclick="setSearchTab('web')"><span data-i18n="search_tabs_0">Все</span></button>
+                        <button class="search-tab" data-tab="images" onclick="setSearchTab('images')"><span data-i18n="search_tabs_1">Картинки</span></button>
+                        <button class="search-tab" data-tab="videos" onclick="setSearchTab('videos')"><span data-i18n="search_tabs_2">Видео</span></button>
+                        <button class="search-tab" data-tab="news" onclick="setSearchTab('news')"><span data-i18n="search_tabs_3">Новости</span></button>
+                        <button class="search-tab" data-tab="maps" onclick="setSearchTab('maps')"><span data-i18n="search_tabs_4">Карты</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Популярные запросы -->
+            <div class="popular-queries" id="popularQueries">
+                <h3 data-i18n="popular_queries">Популярные запросы</h3>
+                <div class="query-tags" id="queryTags"></div>
+            </div>
+
+            <!-- Быстрый доступ -->
+            <div class="quick-access">
+                <h2 data-i18n="quick_access">Быстрый доступ</h2>
+                <div class="bookmarks-grid" id="bookmarksGrid"></div>
+            </div>
+
+            <!-- Виджеты -->
+            <div class="widgets-grid">
+                <!-- Виджет: Часы -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>🕐 <span data-i18n="widget_time">Зорны час</span></h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="clock">
+                            <div class="time" id="clockTime">00:00:00</div>
+                            <div class="date" id="clockDate">Загрузка...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Виджет: Погода -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>🌤 <span data-i18n="widget_weather">Погода</span></h3>
+                    </div>
+                    <div class="widget-content" id="weatherWidget">
+                        <div class="skeleton-loader"></div>
+                    </div>
+                </div>
+
+                <!-- Виджет: Новости -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>📰 <span data-i18n="widget_news">Новости</span></h3>
+                    </div>
+                    <div class="widget-content" id="newsWidget">
+                        <div class="skeleton-loader"></div>
+                    </div>
+                </div>
+
+                <!-- Виджет: Курс валют -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>💱 <span data-i18n="widget_currency">Курс валют</span></h3>
+                    </div>
+                    <div class="widget-content" id="currencyWidget">
+                        <div class="skeleton-loader"></div>
+                    </div>
+                </div>
+
+                <!-- Виджет: Заметки -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>📝 <span data-i18n="notes">Заметки</span></h3>
+                    </div>
+                    <div class="widget-content">
+                        <textarea id="notesArea" data-i18n-placeholder="notes_placeholder" placeholder="Ваша заметка..."></textarea>
+                        <button class="btn-primary btn-small" onclick="saveNotes()" data-i18n="notes_save">Сохранить</button>
+                        <div id="notesSaved" class="notes-saved">✓ <span data-i18n="notes_saved">Заметка сохранена</span></div>
+                    </div>
+                </div>
+
+                <!-- Виджет: ЗОРКА ИИ -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>🤖 <span data-i18n="widget_ai">Спросить ЗОРКУ</span></h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="ai-mini-chat" id="aiMiniChat">
+                            <div class="ai-mini-messages" id="aiMiniMessages"></div>
+                            <div class="ai-mini-input">
+                                <input type="text" id="aiMiniInput" data-i18n-placeholder="ai_placeholder" placeholder="Спросите ЗОРКУ..." onkeypress="if(event.key==='Enter') sendMiniAI()">
+                                <button onclick="sendMiniAI()">→</button>
+                            </div>
+                        </div>
+                        <button class="btn-secondary btn-small" onclick="showSection('ai')" data-i18n="ai_title">Открыть полный чат</button>
+                    </div>
+                </div>
+
+                <!-- Виджет: Интересно знать -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>💡 <span data-i18n="interesting">Интересно знать</span></h3>
+                    </div>
+                    <div class="widget-content" id="factsWidget"></div>
+                </div>
+            </div>
+
+            <!-- Счётчик поисков -->
+            <div class="search-counter">
+                <p><span data-i18n="search_counter_text">Сегодня выполнено поисков:</span> <strong id="searchCount">0</strong></p>
+            </div>
+        </section>
+
+        <!-- ========== СТРАНИЦА ПОИСКА ========== -->
+        <section id="section-search" class="section">
+            <div class="search-page">
+                <div class="search-sidebar">
+                    <h3><span data-i18n="ai_quick_answer">Быстрый ответ ЗОРКИ</span></h3>
+                    <div id="searchAIAnswer" class="search-ai-answer"></div>
+                </div>
+                <div class="search-main">
+                    <div class="search-tabs-page">
+                        <button class="search-tab active" onclick="switchSearchType('web')" data-i18n="search_tabs_0">Все</button>
+                        <button class="search-tab" onclick="switchSearchType('images')" data-i18n="search_tabs_1">Картинки</button>
+                        <button class="search-tab" onclick="switchSearchType('videos')" data-i18n="search_tabs_2">Видео</button>
+                        <button class="search-tab" onclick="switchSearchType('news')" data-i18n="search_tabs_3">Новости</button>
+                        <button class="search-tab" onclick="switchSearchType('maps')" data-i18n="search_tabs_4">Карты</button>
+                    </div>
+                    <iframe id="searchFrame" frameborder="0"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== СТРАНИЦА НОВОСТЕЙ ========== -->
+        <section id="section-news" class="section">
+            <div class="page-header">
+                <h1>📰 <span data-i18n="news_title">Новости</span></h1>
+            </div>
+            <div class="news-tabs">
+                <button class="news-tab active" onclick="loadNews('world')" data-i18n="news_world">Мир</button>
+                <button class="news-tab" onclick="loadNews('tech')" data-i18n="news_tech">Технологии</button>
+                <button class="news-tab" onclick="loadNews('sport')" data-i18n="news_sport">Спорт</button>
+            </div>
+            <div class="news-grid" id="newsGrid"></div>
+        </section>
+
+        <!-- ========== СТРАНИЦА ПОГОДЫ ========== -->
+        <section id="section-weather" class="section">
+            <div class="page-header">
+                <h1>🌤 <span data-i18n="weather_title">Погода</span></h1>
+            </div>
+            <div class="weather-search-bar">
+                <input type="text" id="weatherSearchInput" data-i18n-placeholder="weather_search" placeholder="Введите город..." onkeypress="if(event.key==='Enter') searchWeatherCity()">
+                <button onclick="searchWeatherCity()">🔍</button>
+                <button onclick="getWeatherByLocation()">📍 <span data-i18n="maps_my_location">Моё местоположение</span></button>
+            </div>
+            <div id="weatherCityResults" class="weather-city-results"></div>
+            <div id="weatherMain" class="weather-main"></div>
+        </section>
+
+        <!-- ========== СТРАНИЦА КАРТ ========== -->
+        <section id="section-maps" class="section">
+            <div class="page-header">
+                <h1>🗺 <span data-i18n="maps_title">Карты</span></h1>
+            </div>
+            <div class="maps-controls">
+                <input type="text" id="mapsSearchInput" data-i18n-placeholder="maps_search" placeholder="Найти место..." onkeypress="if(event.key==='Enter') searchOnMap()">
+                <button onclick="searchOnMap()">🔍</button>
+                <button onclick="goToMyLocation()">📍 <span data-i18n="maps_my_location">Моё местоположение</span></button>
+                <div class="maps-layer-switch">
+                    <button class="active" onclick="switchMapLayer('map')" data-i18n="maps_layer_map">Карта</button>
+                    <button onclick="switchMapLayer('satellite')" data-i18n="maps_layer_sat">Спутник</button>
+                </div>
+            </div>
+            <div id="map" class="map-container"></div>
+        </section>
+
+        <!-- ========== СТРАНИЦА ИИ ЗОРКА ========== -->
+        <section id="section-ai" class="section">
+            <div class="ai-page">
+                <aside class="ai-sidebar">
+                    <button class="btn-primary" onclick="newAIChat()" data-i18n="ai_new_chat">Новый чат</button>
+                    <div class="ai-quick-prompts">
+                        <h4 data-i18n="ai_quick">Быстрые запросы</h4>
+                        <div id="aiQuickButtons"></div>
+                    </div>
+                    <div class="ai-history">
+                        <h4>История чатов</h4>
+                        <div id="aiHistoryList"></div>
+                    </div>
+                </aside>
+                <div class="ai-main">
+                    <div class="ai-header">
+                        <div class="zorka-avatar">★</div>
+                        <div>
+                            <h2 data-i18n="ai_title">ЗОРКА — умный помощник</h2>
+                            <p class="ai-status" id="aiStatus"></p>
+                        </div>
+                    </div>
+                    <div class="ai-messages" id="aiMessages"></div>
+                    <div class="ai-input-container">
+                        <textarea id="aiInput" data-i18n-placeholder="ai_placeholder" placeholder="Спросите ЗОРКУ..." rows="1"></textarea>
+                        <button onclick="sendAIMessage()" data-i18n="ai_send">Отправить</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== СТРАНИЦА ПЕРЕВОДЧИК ========== -->
+        <section id="section-translate" class="section">
+            <div class="page-header">
+                <h1>🌐 <span data-i18n="translate_title">Переводчик</span></h1>
+            </div>
+            <div class="translate-container">
+                <div class="translate-panel">
+                    <select id="translateFrom" onchange="doTranslate()">
+                        <option value="auto">Auto</option>
+                        <option value="en">English</option>
+                        <option value="ru" selected>Русский</option>
+                        <option value="be">Беларуская</option>
+                        <option value="uk">Українська</option>
+                        <option value="pl">Polski</option>
+                        <option value="de">Deutsch</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                        <option value="it">Italiano</option>
+                        <option value="zh">中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                    <textarea id="translateInput" data-i18n-placeholder="translate_placeholder" placeholder="Введите текст..." oninput="onTranslateInput()"></textarea>
+                    <div class="translate-controls">
+                        <button onclick="speakText('translateInput', document.getElementById('translateFrom').value)">🔊 <span data-i18n="translate_speak">Произнести</span></button>
+                        <button onclick="copyText('translateInput')">📋 <span data-i18n="translate_copy">Копировать</span></button>
+                        <button onclick="clearTranslate('translateInput')">🗑</button>
+                    </div>
+                    <div class="char-count"><span id="translateInputCount">0</span> / 5000</div>
+                </div>
+
+                <button class="translate-swap" onclick="swapLanguages()">↔</button>
+
+                <div class="translate-panel">
+                    <select id="translateTo" onchange="doTranslate()">
+                        <option value="en" selected>English</option>
+                        <option value="ru">Русский</option>
+                        <option value="be">Беларуская</option>
+                        <option value="uk">Українська</option>
+                        <option value="pl">Polski</option>
+                        <option value="de">Deutsch</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                        <option value="it">Italiano</option>
+                        <option value="zh">中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                    <textarea id="translateOutput" readonly></textarea>
+                    <div class="translate-controls">
+                        <button onclick="speakText('translateOutput', document.getElementById('translateTo').value)">🔊 <span data-i18n="translate_speak">Произнести</span></button>
+                        <button onclick="copyText('translateOutput')">📋 <span data-i18n="translate_copy">Копировать</span></button>
+                        <button onclick="clearTranslate('translateOutput')">🗑</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== СТРАНИЦА ВАЛЮТЫ ========== -->
+        <section id="section-currency" class="section">
+            <div class="page-header">
+                <h1>💱 <span data-i18n="currency_title">Курс валют</span></h1>
+            </div>
+            
+            <!-- Конвертер -->
+            <div class="currency-converter">
+                <h3 data-i18n="currency_converter">Конвертер валют</h3>
+                <div class="converter-row">
+                    <input type="number" id="currencyAmount" value="1" oninput="convertCurrency()">
+                    <select id="currencyFrom" onchange="convertCurrency()">
+                        <option value="USD" selected>USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="BYN">BYN</option>
+                        <option value="RUB">RUB</option>
+                        <option value="GBP">GBP</option>
+                        <option value="PLN">PLN</option>
+                    </select>
+                    <span>=</span>
+                    <input type="text" id="currencyResult" readonly>
+                    <select id="currencyTo" onchange="convertCurrency()">
+                        <option value="USD">USD</option>
+                        <option value="EUR" selected>EUR</option>
+                        <option value="BYN">BYN</option>
+                        <option value="RUB">RUB</option>
+                        <option value="GBP">GBP</option>
+                        <option value="PLN">PLN</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Основные валюты -->
+            <div class="currency-grid" id="currencyGrid"></div>
+
+            <button class="btn-secondary" onclick="toggleAllCurrencies()" id="showAllCurrenciesBtn" data-i18n="currency_show_all">Показать все валюты</button>
+            
+            <div id="allCurrencies" class="all-currencies" style="display:none;"></div>
+
+            <!-- График USD -->
+            <div class="currency-chart">
+                <h3>График USD за 7 дней</h3>
+                <svg id="currencyChart" viewBox="0 0 800 300"></svg>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========== МОБИЛЬНЫЙ TABBAR ========== -->
+    <nav class="mobile-tabbar">
+        <a href="#" onclick="showSection('home'); return false;" class="tab-item active" data-section="home">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label" data-i18n="nav_home">Главная</span>
+        </a>
+        <a href="#" onclick="performSearch(); return false;" class="tab-item">
+            <span class="tab-icon">🔍</span>
+            <span class="tab-label" data-i18n="btn_search">Поиск</span>
+        </a>
+        <a href="#" onclick="showSection('news'); return false;" class="tab-item" data-section="news">
+            <span class="tab-icon">📰</span>
+            <span class="tab-label" data-i18n="nav_news">Новости</span>
+        </a>
+        <a href="#" onclick="showSection('weather'); return false;" class="tab-item" data-section="weather">
+            <span class="tab-icon">🌤</span>
+            <span class="tab-label" data-i18n="nav_weather">Погода</span>
+        </a>
+        <a href="#" onclick="showSection('ai'); return false;" class="tab-item" data-section="ai">
+            <span class="tab-icon">🤖</span>
+            <span class="tab-label">ЗОРКА</span>
+        </a>
+    </nav>
+
+    <!-- ========== EASTER EGG МОДАЛЬНОЕ ОКНО ========== -->
+    <div class="easter-egg-modal" id="easterEggModal">
+        <div class="stars-animation" id="starsAnimation"></div>
+        <div class="easter-egg-content">
+            <div class="easter-egg-star">★</div>
+            <p data-i18n="easter_egg_text">Загадай желание! ★</p>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Основной скрипт -->
+    <script src="app.js"></script>
+
+</body>
+</html>
