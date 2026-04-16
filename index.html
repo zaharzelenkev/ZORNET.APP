@@ -3,1734 +3,1303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZORNET — Беларускі пошук</title>
+    <title>ZORNET</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-
     <style>
-        /* ============================================================
-           ПЕРЕМЕННЫЕ — ЦВЕТОВАЯ СИСТЕМА
-           ============================================================ */
         :root {
-            --gold: #D4AF37;
-            --gold-dark: #B8860B;
-            --gold-light: #F5DEB3;
-            --gold-glow: rgba(212,175,55,0.18);
-            --gold-glow-strong: rgba(212,175,55,0.45);
-            --bg: #F8F9FA;
-            --bg2: #FFFFFF;
-            --bg3: #F0F2F5;
-            --card: #FFFFFF;
-            --input-bg: #FFFFFF;
-            --text: #1A1A2E;
-            --text2: #4A5568;
-            --text3: #718096;
-            --border: #E2E8F0;
-            --shadow: rgba(0,0,0,0.07);
-            --shadow2: rgba(0,0,0,0.13);
-            --url-color: #1a73e8;
-            --header-h: 64px;
+            --gold:       #D4AF37;
+            --gold-dark:  #B8860B;
+            --gold-glow:  rgba(212,175,55,.14);
+            --gold-glow2: rgba(212,175,55,.38);
+            --bg:         #F7F8FA;
+            --bg2:        #FFFFFF;
+            --bg3:        #EEF0F4;
+            --card:       #FFFFFF;
+            --inp:        #FFFFFF;
+            --text:       #18192A;
+            --text2:      #4A5568;
+            --text3:      #8896A7;
+            --border:     #E4E8EF;
+            --sh:         rgba(0,0,0,.06);
+            --sh2:        rgba(0,0,0,.13);
+            --hdr:        62px;
+            --radius:     14px;
         }
-        html.dark {
-            --bg: #111111;
-            --bg2: #1A1A1A;
-            --bg3: #222222;
-            --card: #1E1E1E;
-            --input-bg: #252525;
-            --text: #F0F0F0;
-            --text2: #B0B0B0;
-            --text3: #666666;
-            --border: #2E2E2E;
-            --shadow: rgba(0,0,0,0.35);
-            --shadow2: rgba(0,0,0,0.55);
-            --url-color: #8AB4F8;
+        @media(prefers-color-scheme:dark){
+            :root{
+                --bg:#0E0E0E;--bg2:#161616;--bg3:#1E1E1E;
+                --card:#181818;--inp:#202020;
+                --text:#ECECEC;--text2:#A0A0A0;--text3:#555555;
+                --border:#272727;--sh:rgba(0,0,0,.32);--sh2:rgba(0,0,0,.52);
+            }
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{font-size:16px;height:100%}
+        body{
+            font-family:'Inter',sans-serif;
+            background:var(--bg);color:var(--text);
+            min-height:100vh;-webkit-font-smoothing:antialiased;
+        }
+        a{text-decoration:none;color:inherit}
+        button{cursor:pointer;font-family:inherit;border:none;background:none}
+        input,select{font-family:inherit}
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:var(--bg2)}
+        ::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:3px}
+
+        /* ── ЛОГОТИП ── */
+        .logo{
+            font-family:'Playfair Display',serif;font-weight:900;
+            letter-spacing:-1px;
+            background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 55%,var(--gold) 100%);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text;display:inline-block;position:relative;
+            user-select:none;
+        }
+        .logo::after{
+            content:'Зроблена ў Беларусі';
+            position:absolute;bottom:-18px;left:50%;
+            transform:translateX(-50%) translateY(4px);
+            font-family:'Inter',sans-serif;font-size:.55rem;font-weight:500;
+            letter-spacing:.7px;color:var(--gold-dark);
+            -webkit-text-fill-color:var(--gold-dark);
+            background:none;-webkit-background-clip:initial;background-clip:initial;
+            white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;
+        }
+        .logo:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
+        .logo-xl{font-size:3.8rem}
+        .logo-sm{font-size:1.55rem;letter-spacing:-.5px;cursor:pointer}
+        .logo-sm::after{font-size:.5rem;bottom:-13px}
+
+        /* ── СТРОКА ПОИСКА ── */
+        .sw{position:relative;width:100%}
+        .si{
+            width:100%;height:52px;padding:0 56px 0 22px;
+            background:var(--inp);border:1.5px solid var(--border);
+            border-radius:100px;font-size:.95rem;color:var(--text);
+            outline:none;box-shadow:0 2px 14px var(--sh);
+            transition:border-color .25s,box-shadow .25s;
+        }
+        .si:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow),0 4px 20px var(--sh2)}
+        .si::placeholder{color:var(--text3)}
+        .sb{
+            position:absolute;right:5px;top:50%;transform:translateY(-50%);
+            width:42px;height:42px;border-radius:50%;
+            background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);
+            display:flex;align-items:center;justify-content:center;
+            transition:box-shadow .2s,transform .2s;
+        }
+        .sb:hover{box-shadow:0 3px 16px var(--gold-glow2);transform:translateY(-50%) scale(1.06)}
+        .sb svg{stroke:#111;flex-shrink:0}
+        .si-sm{height:44px;font-size:.88rem}
+        .sb-sm{width:36px;height:36px}
+
+        /* подсказки */
+        .sug{
+            position:absolute;top:calc(100% + 8px);left:0;right:0;
+            background:var(--card);border:1px solid var(--border);
+            border-radius:var(--radius);box-shadow:0 8px 32px var(--sh2);
+            z-index:400;overflow:hidden;
+        }
+        .sug-row{
+            display:flex;align-items:center;gap:10px;
+            padding:10px 18px;font-size:.875rem;color:var(--text2);
+            cursor:pointer;transition:background .15s;
+        }
+        .sug-row:hover{background:var(--bg3);color:var(--text)}
+        .sug-ic{color:var(--text3);display:flex;align-items:center;flex-shrink:0}
+
+        /* ── ГЛАВНАЯ ── */
+        #pgHome{
+            display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            min-height:100vh;padding:40px 20px;
+        }
+        .home-inner{
+            display:flex;flex-direction:column;
+            align-items:center;width:100%;max-width:620px;
+        }
+        .home-logo{margin-bottom:40px;text-align:center}
+
+        /* ── ВИДЖЕТЫ ── */
+        .wgts{
+            display:grid;grid-template-columns:repeat(4,1fr);
+            gap:10px;width:100%;margin-top:22px;
+        }
+        @media(max-width:580px){.wgts{grid-template-columns:repeat(2,1fr)}}
+        .wgt{
+            background:var(--card);border:1px solid var(--border);
+            border-radius:var(--radius);padding:14px 10px;text-align:center;
+            transition:border-color .25s,box-shadow .25s,transform .2s;
+        }
+        .wgt:hover{border-color:var(--gold);box-shadow:0 4px 20px var(--gold-glow);transform:translateY(-2px)}
+        .wgt-ic{
+            width:30px;height:30px;border-radius:8px;
+            background:linear-gradient(135deg,var(--gold-glow),rgba(184,134,11,.07));
+            border:1px solid rgba(212,175,55,.22);
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 9px;
+        }
+        .wgt-ic svg{stroke:var(--gold-dark)}
+        .wgt-val{
+            font-size:1.15rem;font-weight:700;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        .wgt-lbl{font-size:.65rem;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+        .wgt-sub{font-size:.6rem;color:var(--text3);margin-top:2px}
+        .wgt-in{
+            width:100%;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);
+            border-radius:8px;font-size:.75rem;color:var(--text);outline:none;text-align:center;margin-bottom:5px;
+        }
+        .wgt-in:focus{border-color:var(--gold)}
+        .city-row{display:flex;gap:4px;margin-top:7px}
+        .city-in{
+            flex:1;padding:5px 7px;background:var(--bg3);border:1px solid var(--border);
+            border-radius:7px;font-size:.7rem;color:var(--text);outline:none;
+        }
+        .city-in:focus{border-color:var(--gold)}
+        .city-go{
+            padding:5px 9px;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            border-radius:7px;color:#111;font-size:.7rem;font-weight:700;
+            display:flex;align-items:center;
+        }
+        .home-quick{width:100%;margin-top:14px}
+
+        /* ── ШАПКА РЕЗУЛЬТАТОВ ── */
+        #pgResults{display:none;flex-direction:column;min-height:100vh}
+        .res-hdr{
+            position:sticky;top:0;z-index:300;height:var(--hdr);
+            background:color-mix(in srgb,var(--bg) 95%,transparent);
+            backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;padding:0 22px;gap:14px;
+        }
+        .hdr-s{flex:1;max-width:540px;position:relative}
+
+        /* ── ФИЛЬТРЫ ── */
+        .filters{
+            display:flex;gap:6px;padding:13px 22px 0;
+            max-width:1260px;margin:0 auto;width:100%;flex-wrap:wrap;
+        }
+        .ftab{
+            display:flex;align-items:center;gap:5px;
+            padding:6px 15px;border-radius:100px;
+            border:1px solid var(--border);background:var(--card);
+            color:var(--text2);font-size:.8rem;font-weight:500;
+            transition:all .2s;
+        }
+        .ftab svg{stroke:currentColor}
+        .ftab:hover{border-color:var(--gold);color:var(--gold-dark)}
+        .ftab.active{
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            border-color:transparent;color:#111;
+        }
+        .ftab.active svg{stroke:#111}
+
+        /* ── ОСНОВНОЙ ЛЕЙАУТ ── */
+        .res-body{
+            max-width:1260px;margin:0 auto;width:100%;
+            padding:16px 22px 60px;
+            display:grid;grid-template-columns:1fr 320px;gap:24px;
+            align-items:start;
+        }
+        @media(max-width:940px){.res-body{grid-template-columns:1fr}.res-right{order:-1}}
+        @media(max-width:560px){.res-body{padding:12px 12px 60px}.res-hdr{padding:0 12px}.filters{padding:10px 12px 0}}
+
+        /* ── IFRAME ПОИСК ── */
+        .search-frame-wrap{
+            position:relative;width:100%;
+            border-radius:var(--radius);overflow:hidden;
+            border:1px solid var(--border);
+            box-shadow:0 2px 16px var(--sh);
+            background:var(--card);
+            min-height:600px;
+        }
+        .search-frame{
+            width:100%;height:100%;min-height:700px;
+            border:none;display:block;
+            background:var(--card);
+        }
+        .frame-loader{
+            position:absolute;inset:0;
+            background:var(--card);
+            display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            gap:14px;z-index:10;
+            transition:opacity .4s;
+        }
+        .frame-loader.hidden{opacity:0;pointer-events:none}
+        .frame-loader p{font-size:.85rem;color:var(--text3)}
+
+        /* ── QUICK ANSWER ── */
+        .qcard{
+            background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(184,134,11,.03));
+            border:1px solid var(--gold);border-radius:var(--radius);
+            padding:16px 18px;margin-bottom:16px;
+            display:flex;align-items:center;gap:14px;
+        }
+        .qcard-ico{
+            width:42px;height:42px;border-radius:11px;flex-shrink:0;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            display:flex;align-items:center;justify-content:center;
+        }
+        .qcard-ico svg{stroke:#111}
+        .qcard-val{
+            font-size:1.75rem;font-weight:800;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+            line-height:1.1;
+        }
+        .qcard-lbl{font-size:.75rem;color:var(--text3);margin-top:2px}
+
+        /* ── КОНВЕРТЕР ── */
+        .conv-card{
+            background:var(--card);border:1px solid var(--gold);
+            border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;
+        }
+        .conv-title{
+            font-size:.68rem;font-weight:700;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.6px;
+            margin-bottom:11px;display:flex;align-items:center;gap:5px;
+        }
+        .conv-title svg{stroke:var(--gold-dark)}
+        .conv-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+        .conv-in{
+            flex:1;min-width:65px;padding:7px 10px;
+            background:var(--bg3);border:1px solid var(--border);
+            border-radius:9px;font-size:.88rem;color:var(--text);
+            outline:none;text-align:center;
+        }
+        .conv-in:focus{border-color:var(--gold)}
+        .conv-sel{
+            padding:7px 9px;background:var(--bg3);
+            border:1px solid var(--border);border-radius:9px;
+            font-size:.82rem;color:var(--text);outline:none;
+        }
+        .conv-eq{font-size:.82rem;color:var(--text3);margin-top:9px}
+        .conv-res{
+            font-size:1.3rem;font-weight:800;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
         }
 
-        /* ============================================================
-           RESET И БАЗА
-           ============================================================ */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { font-size: 16px; scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            transition: background .3s, color .3s;
-            -webkit-font-smoothing: antialiased;
+        /* ── ПАГИНАЦИЯ (для совместимости) ── */
+        .pgn{
+            display:flex;align-items:center;justify-content:center;
+            gap:10px;margin-top:20px;padding-top:16px;
+            border-top:1px solid var(--border);
         }
-        a { text-decoration: none; color: inherit; }
-        button { cursor: pointer; font-family: inherit; }
-        input, textarea, select { font-family: inherit; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: var(--bg2); }
-        ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
-        ::selection { background: var(--gold-glow); }
+        .pg-btn{
+            display:flex;align-items:center;gap:5px;
+            padding:8px 18px;border-radius:100px;
+            border:1px solid var(--border);background:var(--card);
+            color:var(--text);font-size:.82rem;font-weight:500;transition:all .2s;
+        }
+        .pg-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold-dark)}
+        .pg-btn:disabled{opacity:.3;cursor:default}
 
-        /* ============================================================
-           ЛОГОТИП
-           ============================================================ */
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 60%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -1px;
-            display: inline-block;
-            position: relative;
-            user-select: none;
+        /* ── AI ВИДЖЕТ ── */
+        .ai-box{
+            position:sticky;top:calc(var(--hdr) + 14px);
+            border-radius:18px;overflow:hidden;
+            border:1px solid var(--gold);box-shadow:0 4px 26px var(--gold-glow);
         }
-        .logo:hover::after {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        .ai-hdr{
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            padding:12px 15px;display:flex;align-items:center;gap:9px;
         }
-        .logo::after {
-            content: '«Зроблена ў Беларусі»';
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(4px);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.6rem;
-            font-weight: 500;
-            letter-spacing: .5px;
-            color: var(--gold-dark);
-            -webkit-text-fill-color: var(--gold-dark);
-            background: none;
-            -webkit-background-clip: initial;
-            background-clip: initial;
-            white-space: nowrap;
-            opacity: 0;
-            transition: all .3s ease;
+        .ai-hdr-ico{
+            width:28px;height:28px;border-radius:50%;
+            background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;
         }
-        .logo-xl { font-size: 4.2rem; }
-        .logo-sm { font-size: 1.7rem; letter-spacing: -.5px; }
-        .logo-sm::after { font-size: .55rem; bottom: -16px; }
+        .ai-hdr-ico svg{stroke:#111}
+        .ai-hdr-name{font-size:.86rem;font-weight:700;color:#111;line-height:1.2}
+        .ai-hdr-sub{font-size:.6rem;color:rgba(0,0,0,.5)}
+        .ai-dot{
+            width:7px;height:7px;border-radius:50%;
+            background:rgba(0,0,0,.2);margin-left:auto;flex-shrink:0;transition:background .3s;
+        }
+        .ai-dot.on{background:#1a7c3e;animation:dpulse 1.2s infinite}
+        @keyframes dpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.5}}
+        .ai-chat{
+            background:var(--card);min-height:130px;max-height:360px;
+            overflow-y:auto;padding:13px 15px;
+        }
+        .ai-ph{
+            display:flex;flex-direction:column;align-items:center;
+            justify-content:center;padding:26px 12px;text-align:center;gap:9px;color:var(--text3);
+        }
+        .ai-ph-ico{
+            width:38px;height:38px;border-radius:50%;
+            background:linear-gradient(135deg,var(--gold-glow),rgba(184,134,11,.06));
+            border:1px solid rgba(212,175,55,.28);
+            display:flex;align-items:center;justify-content:center;
+        }
+        .ai-ph-ico svg{stroke:var(--gold-dark)}
+        .ai-ph p{font-size:.8rem;line-height:1.55}
+        .ask-btn{
+            display:inline-flex;align-items:center;gap:5px;
+            padding:7px 16px;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            border-radius:100px;color:#111;font-size:.78rem;font-weight:700;
+            transition:box-shadow .2s,transform .2s;
+        }
+        .ask-btn:hover{box-shadow:0 4px 14px var(--gold-glow2);transform:translateY(-1px)}
+        .ask-btn svg{stroke:#111}
+        .chat-msg{margin-bottom:9px;animation:fadeUp .25s ease}
+        .chat-msg.usr{text-align:right}
+        .bubble{
+            display:inline-block;max-width:92%;padding:8px 12px;
+            border-radius:13px;font-size:.8rem;line-height:1.65;text-align:left;
+        }
+        .bubble.usr{
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            color:#111;border-bottom-right-radius:3px;font-weight:500;
+        }
+        .bubble.ai{background:var(--bg3);color:var(--text2);border-bottom-left-radius:3px}
+        .chat-meta{font-size:.62rem;color:var(--text3);margin-bottom:3px;display:flex;align-items:center;gap:3px}
+        .chat-meta svg{stroke:var(--gold)}
+        .ai-foot{
+            padding:9px 13px;border-top:1px solid var(--border);
+            background:var(--card);display:flex;gap:6px;
+        }
+        .ai-in{
+            flex:1;padding:7px 13px;background:var(--bg3);
+            border:1px solid var(--border);border-radius:100px;
+            font-size:.8rem;color:var(--text);outline:none;transition:border-color .2s;
+        }
+        .ai-in:focus{border-color:var(--gold)}
+        .ai-send{
+            width:33px;height:33px;border-radius:50%;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;
+        }
+        .ai-send:hover{box-shadow:0 3px 12px var(--gold-glow2);transform:scale(1.07)}
+        .ai-send svg{stroke:#111}
+        .scur::after{content:'▋';animation:blink .7s infinite;color:var(--gold);font-size:.85em}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-        /* ============================================================
-           СТРОКА ПОИСКА
-           ============================================================ */
-        .search-wrap {
-            position: relative;
-            width: 100%;
+        /* ── FAB + SHEET ── */
+        .ai-fab{
+            position:fixed;bottom:22px;right:22px;
+            width:52px;height:52px;border-radius:50%;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            box-shadow:0 4px 22px var(--gold-glow2);
+            display:none;align-items:center;justify-content:center;z-index:400;transition:transform .2s;
         }
-        .search-box {
-            width: 100%;
-            padding: 0 60px 0 22px;
-            height: 52px;
-            border: 1.5px solid var(--border);
-            border-radius: 100px;
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: .97rem;
-            font-weight: 400;
-            outline: none;
-            transition: border-color .25s, box-shadow .25s;
-            box-shadow: 0 2px 10px var(--shadow);
+        .ai-fab svg{stroke:#111}
+        .ai-fab:hover{transform:scale(1.08)}
+        @media(max-width:940px){.ai-fab{display:flex}}
+        .sh-ov{
+            position:fixed;inset:0;background:rgba(0,0,0,.45);
+            z-index:490;opacity:0;pointer-events:none;transition:opacity .3s;
         }
-        .search-box:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px var(--gold-glow), 0 4px 18px var(--shadow2);
+        .sh-ov.show{opacity:1;pointer-events:all}
+        .ai-sheet{
+            position:fixed;bottom:0;left:0;right:0;background:var(--card);
+            border-top:2px solid var(--gold);border-radius:20px 20px 0 0;
+            z-index:500;transform:translateY(100%);
+            transition:transform .36s cubic-bezier(.4,0,.2,1);
+            max-height:72vh;display:flex;flex-direction:column;
         }
-        .search-box::placeholder { color: var(--text3); }
-        .search-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .2s;
-        }
-        .search-btn:hover {
-            box-shadow: 0 3px 14px var(--gold-glow-strong);
-            transform: translateY(-50%) scale(1.06);
-        }
-        .search-btn svg { stroke: #111; }
-        /* Подсказки */
-        .suggestions {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0; right: 0;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 8px 30px var(--shadow2);
-            z-index: 300;
-            overflow: hidden;
-        }
-        .sug-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 18px;
-            font-size: .88rem;
-            color: var(--text2);
-            transition: background .15s;
-            cursor: pointer;
-        }
-        .sug-item:hover { background: var(--bg3); color: var(--text); }
-        .sug-icon { color: var(--text3); flex-shrink: 0; }
-
-        /* ============================================================
-           ГЛАВНАЯ СТРАНИЦА
-           ============================================================ */
-        #pg-home {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 0 20px 40px;
-        }
-        .home-top {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            max-width: 860px;
-            padding: 18px 0 0;
-        }
-        .home-center {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 640px;
-            padding-top: 80px;
-        }
-        .home-logo-wrap { margin-bottom: 44px; text-align: center; }
-        .home-search-wrap { width: 100%; max-width: 640px; position: relative; }
-
-        /* Виджеты главной */
-        .home-widgets {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 640px;
-            margin-top: 28px;
-        }
-        @media(max-width:620px) {
-            .home-widgets { grid-template-columns: repeat(2,1fr); }
-            .home-center { padding-top: 40px; }
-            .logo-xl { font-size: 2.8rem; }
-        }
-        .wgt {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px 12px;
-            text-align: center;
-            transition: border-color .25s, box-shadow .25s, transform .2s;
-        }
-        .wgt:hover {
-            border-color: var(--gold);
-            box-shadow: 0 4px 18px var(--gold-glow);
-            transform: translateY(-2px);
-        }
-        .wgt-icon { font-size: 1.35rem; margin-bottom: 6px; }
-        .wgt-val {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-        .wgt-lbl { font-size: .68rem; color: var(--text3); margin-top: 3px; }
-        .wgt-sub { font-size: .65rem; color: var(--text3); margin-top: 2px; }
-        /* Калькулятор в виджете */
-        .wgt-input {
-            width: 100%;
-            padding: 5px 8px;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: .8rem;
-            color: var(--text);
-            outline: none;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        .wgt-input:focus { border-color: var(--gold); }
-        /* Город */
-        .city-row { display: flex; gap: 4px; margin-top: 6px; }
-        .city-in {
-            flex: 1;
-            padding: 4px 8px;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 7px;
-            font-size: .72rem;
-            color: var(--text);
-            outline: none;
-        }
-        .city-in:focus { border-color: var(--gold); }
-        .city-go {
-            padding: 4px 8px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            border: none;
-            border-radius: 7px;
-            color: #111;
-            font-size: .72rem;
-            font-weight: 600;
-        }
-        /* Быстрый ответ на главной */
-        .quick-home {
-            width: 100%;
-            max-width: 640px;
-            margin-top: 14px;
+        .ai-sheet.open{transform:translateY(0)}
+        .sh-handle{
+            width:36px;height:4px;background:var(--border);
+            border-radius:2px;margin:10px auto 5px;cursor:pointer;
         }
 
-        /* ============================================================
-           ШАПКА СТРАНИЦЫ РЕЗУЛЬТАТОВ
-           ============================================================ */
-        #pg-results { display: none; flex-direction: column; min-height: 100vh; }
-        .res-header {
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            height: var(--header-h);
-            background: rgba(var(--bg-raw, 248,249,250), .97);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            gap: 18px;
+        /* ── МИНИ-ВИДЖЕТЫ (боковая панель) ── */
+        .side-wgts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+        .swgt{
+            background:var(--card);border:1px solid var(--border);
+            border-radius:13px;padding:11px 9px;text-align:center;transition:border-color .2s;
         }
-        html.dark .res-header { background: rgba(17,17,17,.97); }
-        .res-header-search { flex: 1; max-width: 580px; }
-        .res-header-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+        .swgt:hover{border-color:var(--gold)}
+        .swgt-ic{
+            width:24px;height:24px;border-radius:6px;
+            background:linear-gradient(135deg,var(--gold-glow),rgba(184,134,11,.06));
+            border:1px solid rgba(212,175,55,.18);
+            display:flex;align-items:center;justify-content:center;margin:0 auto 6px;
+        }
+        .swgt-ic svg{stroke:var(--gold-dark)}
+        .swgt-val{
+            font-size:.95rem;font-weight:700;
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        .swgt-lbl{font-size:.58rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
 
-        /* ============================================================
-           ФИЛЬТРЫ
-           ============================================================ */
-        .filters {
-            display: flex;
-            gap: 6px;
-            padding: 14px 24px 0;
-            max-width: 1300px;
-            margin: 0 auto;
-            width: 100%;
-            flex-wrap: wrap;
+        /* ── СПИННЕР ── */
+        .spin{
+            display:inline-block;width:20px;height:20px;
+            border:2.5px solid var(--border);border-top-color:var(--gold);
+            border-radius:50%;animation:sp .7s linear infinite;
         }
-        .ftab {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 7px 18px;
-            border-radius: 100px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            color: var(--text2);
-            font-size: .83rem;
-            transition: all .2s;
-        }
-        .ftab:hover { border-color: var(--gold); color: var(--gold-dark); }
-        .ftab.active {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            border-color: transparent;
-            color: #111;
-            font-weight: 600;
-        }
+        .spin.lg{width:34px;height:34px;border-width:3px}
+        @keyframes sp{to{transform:rotate(360deg)}}
 
-        /* ============================================================
-           ОСНОВНОЙ ЛЕЙАУТ РЕЗУЛЬТАТОВ
-           ============================================================ */
-        .res-body {
-            max-width: 1300px;
-            margin: 0 auto;
-            width: 100%;
-            padding: 18px 24px 60px;
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 28px;
-            align-items: start;
+        /* ── ТОСТЫ ── */
+        #toasts{
+            position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+            z-index:9999;display:flex;flex-direction:column;align-items:center;
+            gap:7px;pointer-events:none;
         }
-        @media(max-width:980px) {
-            .res-body { grid-template-columns: 1fr; }
-            .res-right { order: -1; }
+        .toast{
+            background:var(--card);border:1px solid var(--border);border-radius:11px;
+            padding:9px 16px;font-size:.83rem;color:var(--text);
+            box-shadow:0 6px 26px var(--sh2);display:flex;align-items:center;gap:8px;
+            animation:tin .28s ease;pointer-events:all;white-space:nowrap;
         }
-        @media(max-width:600px) {
-            .res-body { padding: 14px 14px 60px; }
-            .res-header { padding: 0 14px; gap: 10px; }
-            .filters { padding: 12px 14px 0; }
-        }
+        .toast.ok{border-left:3px solid #22c55e}
+        .toast.err{border-left:3px solid #ef4444}
+        .toast.inf{border-left:3px solid var(--gold)}
+        @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        @keyframes tout{from{opacity:1}to{opacity:0;transform:translateY(6px)}}
 
-        /* ============================================================
-           БЫСТРЫЙ ОТВЕТ (ZERO-CLICK)
-           ============================================================ */
-        .quick-card {
-            background: linear-gradient(135deg, rgba(212,175,55,.09) 0%, rgba(184,134,11,.04) 100%);
-            border: 1px solid var(--gold);
-            border-radius: 16px;
-            padding: 18px 20px;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-        .quick-emoji { font-size: 2rem; flex-shrink: 0; }
-        .quick-res {
-            font-size: 1.9rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.1;
-        }
-        .quick-lbl { font-size: .78rem; color: var(--text3); margin-top: 3px; }
+        /* ── АНИМАЦИИ ── */
+        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        .hidden{display:none!important}
 
-        /* Конвертер */
-        .conv-card {
-            background: var(--card);
-            border: 1px solid var(--gold);
-            border-radius: 16px;
-            padding: 16px 18px;
-            margin-bottom: 18px;
+        /* ── КНОПКИ ПОИСКОВИКА ── */
+        .engine-tabs{
+            display:flex;gap:5px;margin-top:11px;flex-wrap:wrap;justify-content:center;
         }
-        .conv-title { font-size: .72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px; }
-        .conv-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .conv-in {
-            flex: 1;
-            min-width: 70px;
-            padding: 8px 12px;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            font-size: .9rem;
-            color: var(--text);
-            outline: none;
-            text-align: center;
+        .etab{
+            display:flex;align-items:center;gap:4px;
+            padding:5px 13px;border-radius:100px;
+            border:1px solid var(--border);background:var(--card);
+            color:var(--text2);font-size:.75rem;font-weight:500;transition:all .2s;
         }
-        .conv-in:focus { border-color: var(--gold); }
-        .conv-sel {
-            padding: 8px 10px;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            font-size: .85rem;
-            color: var(--text);
-            outline: none;
+        .etab svg{stroke:currentColor;flex-shrink:0}
+        .etab:hover{border-color:var(--gold);color:var(--gold-dark)}
+        .etab.active{
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            border-color:transparent;color:#111;
         }
-        .conv-eq { color: var(--text3); font-size: .85rem; margin-top: 10px; }
-        .conv-result {
-            font-size: 1.4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .etab.active svg{stroke:#111}
 
-        /* ============================================================
-           РЕЗУЛЬТАТЫ ПОИСКА
-           ============================================================ */
-        .search-info { font-size: .78rem; color: var(--text3); padding: 4px 0 14px; }
-        .result-item {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border);
-            animation: fadeUp .35s ease both;
+        /* ── IFRAME КОНТЕЙНЕР ── */
+        .iframe-container{
+            width:100%;position:relative;
+            border-radius:var(--radius);overflow:hidden;
+            border:1px solid var(--border);box-shadow:0 2px 14px var(--sh);
         }
-        .result-item:last-child { border-bottom: none; }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        #searchFrame{
+            width:100%;min-height:680px;border:none;
+            display:block;background:var(--card);
+            opacity:0;transition:opacity .35s;
         }
-        .result-item:nth-child(1) { animation-delay: .04s; }
-        .result-item:nth-child(2) { animation-delay: .08s; }
-        .result-item:nth-child(3) { animation-delay: .12s; }
-        .result-item:nth-child(4) { animation-delay: .16s; }
-        .result-item:nth-child(5) { animation-delay: .20s; }
-        .result-item:nth-child(6) { animation-delay: .24s; }
-        .result-item:nth-child(7) { animation-delay: .28s; }
-        .result-item:nth-child(8) { animation-delay: .32s; }
-        .result-item:nth-child(9) { animation-delay: .36s; }
-        .result-item:nth-child(10) { animation-delay: .40s; }
-        .r-site {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 4px;
+        #searchFrame.loaded{opacity:1}
+        .frame-cover{
+            position:absolute;inset:0;background:var(--card);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:14px;z-index:5;transition:opacity .35s,visibility .35s;
         }
-        .r-favicon {
-            width: 14px;
-            height: 14px;
-            border-radius: 3px;
-            object-fit: contain;
-        }
-        .r-domain { font-size: .78rem; color: var(--text3); }
-        .r-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--gold-dark);
-            line-height: 1.4;
-            display: block;
-            margin-bottom: 5px;
-            transition: color .2s;
-        }
-        html.dark .r-title { color: var(--gold); }
-        .r-title:hover { text-decoration: underline; }
-        .r-snippet { font-size: .855rem; color: var(--text2); line-height: 1.65; }
-        /* Изображения */
-        .img-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-        }
-        .img-card {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all .25s;
-        }
-        .img-card:hover { transform: scale(1.03); box-shadow: 0 4px 18px var(--shadow2); border-color: var(--gold); }
-        .img-card img { width: 100%; height: 110px; object-fit: cover; display: block; }
-        .img-card-title { padding: 6px 8px; font-size: .7rem; color: var(--text2); line-height: 1.3; }
+        .frame-cover.gone{opacity:0;visibility:hidden}
+        .frame-cover p{font-size:.85rem;color:var(--text3)}
 
-        /* ============================================================
-           ПАГИНАЦИЯ
-           ============================================================ */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 36px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
+        /* ── ENGINE BADGE ── */
+        .engine-badge{
+            display:inline-flex;align-items:center;gap:5px;
+            background:linear-gradient(135deg,var(--gold-glow),rgba(184,134,11,.06));
+            border:1px solid rgba(212,175,55,.3);border-radius:100px;
+            padding:3px 10px;font-size:.65rem;font-weight:600;
+            color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px;
         }
-        .pg-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 9px 22px;
-            border-radius: 100px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            color: var(--text);
-            font-size: .85rem;
-            font-weight: 500;
-            transition: all .2s;
-        }
-        .pg-btn:hover:not(:disabled) {
-            border-color: var(--gold);
-            color: var(--gold-dark);
-        }
-        .pg-btn:disabled { opacity: .35; cursor: default; }
-        .pg-info { font-size: .82rem; color: var(--text3); }
-
-        /* ============================================================
-           AI ВИДЖЕТ (правая колонка)
-           ============================================================ */
-        .ai-box {
-            position: sticky;
-            top: calc(var(--header-h) + 16px);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--gold);
-            box-shadow: 0 4px 24px var(--gold-glow);
-        }
-        .ai-head {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .ai-head-ico {
-            width: 30px;
-            height: 30px;
-            background: rgba(0,0,0,.12);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            flex-shrink: 0;
-        }
-        .ai-head-name { font-size: .9rem; font-weight: 700; color: #111; line-height: 1.2; }
-        .ai-head-sub { font-size: .65rem; color: rgba(0,0,0,.55); }
-        .ai-status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: rgba(0,0,0,.25);
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-        .ai-status-dot.active {
-            background: #22c55e;
-            animation: pulse 1.2s infinite;
-        }
-        @keyframes pulse {
-            0%,100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: .6; }
-        }
-        .ai-chat {
-            background: var(--card);
-            min-height: 140px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding: 14px 16px;
-        }
-        .ai-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 28px 16px;
-            text-align: center;
-            gap: 10px;
-            color: var(--text3);
-        }
-        .ai-placeholder-ico { font-size: 1.8rem; opacity: .35; }
-        .ai-placeholder p { font-size: .83rem; line-height: 1.5; }
-        .ask-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 18px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            border: none;
-            border-radius: 100px;
-            color: #111;
-            font-size: .8rem;
-            font-weight: 700;
-            transition: all .2s;
-        }
-        .ask-btn:hover { box-shadow: 0 4px 14px var(--gold-glow-strong); transform: translateY(-1px); }
-        /* Чат-пузыри */
-        .chat-msg { margin-bottom: 10px; animation: fadeUp .25s ease; }
-        .chat-msg.user { text-align: right; }
-        .bubble {
-            display: inline-block;
-            max-width: 92%;
-            padding: 9px 13px;
-            border-radius: 14px;
-            font-size: .83rem;
-            line-height: 1.65;
-            text-align: left;
-        }
-        .bubble.user {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #111;
-            border-bottom-right-radius: 3px;
-            font-weight: 500;
-        }
-        .bubble.ai {
-            background: var(--bg3);
-            color: var(--text2);
-            border-bottom-left-radius: 3px;
-        }
-        .chat-meta { font-size: .65rem; color: var(--text3); margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
-        /* AI Input */
-        .ai-footer {
-            padding: 10px 14px;
-            border-top: 1px solid var(--border);
-            background: var(--card);
-            display: flex;
-            gap: 7px;
-        }
-        .ai-in {
-            flex: 1;
-            padding: 8px 14px;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            font-size: .83rem;
-            color: var(--text);
-            outline: none;
-            transition: border-color .2s;
-        }
-        .ai-in:focus { border-color: var(--gold); }
-        .ai-send {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all .2s;
-        }
-        .ai-send:hover { box-shadow: 0 3px 12px var(--gold-glow-strong); transform: scale(1.07); }
-        /* Курсор стриминга */
-        .stream-cursor::after {
-            content: '▋';
-            animation: blink .7s infinite;
-            color: var(--gold);
-            font-size: .85em;
-        }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-
-        /* ============================================================
-           МОБИЛЬНЫЙ AI (BOTTOM SHEET)
-           ============================================================ */
-        .ai-fab {
-            position: fixed;
-            bottom: 22px;
-            right: 22px;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            box-shadow: 0 4px 20px var(--gold-glow-strong);
-            font-size: 1.3rem;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 400;
-            transition: transform .2s;
-        }
-        .ai-fab:hover { transform: scale(1.08); }
-        @media(max-width:980px) { .ai-fab { display: flex; } }
-        .ai-sheet {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--card);
-            border-top: 2px solid var(--gold);
-            border-radius: 22px 22px 0 0;
-            z-index: 500;
-            transform: translateY(100%);
-            transition: transform .38s cubic-bezier(.4,0,.2,1);
-            max-height: 72vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .ai-sheet.open { transform: translateY(0); }
-        .sheet-handle {
-            width: 38px; height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin: 10px auto;
-            cursor: pointer;
-        }
-        .sheet-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.4);
-            z-index: 490;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .3s;
-        }
-        .sheet-overlay.show { opacity: 1; pointer-events: all; }
-
-        /* ============================================================
-           ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
-           ============================================================ */
-        .theme-sw {
-            display: flex;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            padding: 3px;
-            gap: 2px;
-        }
-        .th-btn {
-            border: none;
-            background: transparent;
-            border-radius: 100px;
-            padding: 5px 11px;
-            font-size: .73rem;
-            font-weight: 500;
-            color: var(--text3);
-            transition: all .2s;
-        }
-        .th-btn.active {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #111;
-            box-shadow: 0 1px 6px var(--gold-glow);
-        }
-
-        /* ============================================================
-           ЗАГРУЗЧИК
-           ============================================================ */
-        .spinner {
-            display: inline-block;
-            width: 22px; height: 22px;
-            border: 2.5px solid var(--border);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin .75s linear infinite;
-        }
-        .spinner.lg { width: 34px; height: 34px; border-width: 3px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ============================================================
-           ТОСТЫ
-           ============================================================ */
-        #toasts {
-            position: fixed;
-            bottom: 24px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            pointer-events: none;
-        }
-        .toast {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 11px 18px;
-            font-size: .85rem;
-            color: var(--text);
-            box-shadow: 0 6px 28px var(--shadow2);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: toastIn .3s ease;
-            pointer-events: all;
-            white-space: nowrap;
-        }
-        .toast.ok { border-left: 3px solid #22c55e; }
-        .toast.err { border-left: 3px solid #ef4444; }
-        .toast.info { border-left: 3px solid var(--gold); }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(8px); } }
-
-        /* ============================================================
-           ПУСТОЙ РЕЗУЛЬТАТ / ОШИБКА
-           ============================================================ */
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--text3);
-        }
-        .empty-state .es-ico { font-size: 2.8rem; margin-bottom: 14px; }
-        .empty-state h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 7px; }
-        .empty-state p { font-size: .88rem; line-height: 1.6; }
-
-        /* ============================================================
-           ПОДВАЛ
-           ============================================================ */
-        .footer {
-            text-align: center;
-            padding: 22px;
-            font-size: .75rem;
-            color: var(--text3);
-            border-top: 1px solid var(--border);
-        }
-        .footer a { color: var(--gold-dark); }
-        html.dark .footer a { color: var(--gold); }
-
-        /* ============================================================
-           УТИЛИТЫ
-           ============================================================ */
-        .hidden { display: none !important; }
-        .gold-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: linear-gradient(135deg, rgba(212,175,55,.13) 0%, rgba(184,134,11,.07) 100%);
-            border: 1px solid var(--gold);
-            border-radius: 100px;
-            padding: 3px 11px;
-            font-size: .68rem;
-            font-weight: 700;
-            color: var(--gold-dark);
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-        html.dark .gold-badge { color: var(--gold); }
+        .engine-badge svg{stroke:var(--gold-dark)}
     </style>
 </head>
 <body>
 
-<!-- ================================================================
-     ТОСТЫ
-     ================================================================ -->
 <div id="toasts"></div>
+<div class="sh-ov" id="shOv" onclick="closeSheet()"></div>
 
-<!-- ================================================================
-     OVERLAY ДЛЯ AI SHEET
-     ================================================================ -->
-<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
-
-<!-- ================================================================
+<!-- ════════════════════════════════════════════════════
      ГЛАВНАЯ СТРАНИЦА
-     ================================================================ -->
-<div id="pg-home">
-    <div class="home-top">
-        <div class="theme-sw" id="themeSw">
-            <button class="th-btn" data-t="light" onclick="setTheme('light')">☀️ Светлая</button>
-            <button class="th-btn" data-t="dark" onclick="setTheme('dark')">🌙 Тёмная</button>
-            <button class="th-btn active" data-t="auto" onclick="setTheme('auto')">✨ Авто</button>
-        </div>
-    </div>
+     ════════════════════════════════════════════════════ -->
+<div id="pgHome">
+    <div class="home-inner">
 
-    <div class="home-center">
         <!-- Логотип -->
-        <div class="home-logo-wrap">
+        <div class="home-logo">
             <span class="logo logo-xl">ZORNET</span>
-            <div style="margin-top:22px;">
-                <span class="gold-badge">🇧🇾 Беларускі пошук</span>
-            </div>
         </div>
 
         <!-- Строка поиска -->
-        <div class="home-search-wrap" style="position:relative;">
-            <div class="search-wrap">
-                <input class="search-box" id="homeQ" type="text"
+        <div style="width:100%;position:relative;">
+            <div class="sw">
+                <input class="si" id="homeQ" type="text"
                     placeholder="Поиск в интернете..."
                     autocomplete="off"
                     onkeydown="if(event.key==='Enter')doSearch()"
-                    oninput="onQueryInput(this.value,'homeSug')">
-                <button class="search-btn" onclick="doSearch()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    oninput="onInp(this.value,'homeSug')">
+                <button class="sb" onclick="doSearch()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </button>
             </div>
-            <div class="suggestions hidden" id="homeSug"></div>
+            <div class="sug hidden" id="homeSug"></div>
         </div>
 
-        <!-- Быстрый ответ на главной -->
-        <div class="quick-home" id="homeQuick"></div>
+        <!-- Выбор поисковика -->
+        <div class="engine-tabs">
+            <button class="etab active" id="et-ddg" onclick="setEngine('ddg')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                DuckDuckGo
+            </button>
+            <button class="etab" id="et-bing" onclick="setEngine('bing')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Bing
+            </button>
+            <button class="etab" id="et-google" onclick="setEngine('google')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Google
+            </button>
+            <button class="etab" id="et-brave" onclick="setEngine('brave')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Brave
+            </button>
+            <button class="etab" id="et-yandex" onclick="setEngine('yandex')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                Яндекс
+            </button>
+        </div>
+
+        <!-- Быстрый ответ (главная) -->
+        <div class="home-quick" id="homeQuick"></div>
 
         <!-- Виджеты -->
-        <div class="home-widgets">
+        <div class="wgts">
             <!-- Погода -->
-            <div class="wgt" id="wgt-weather" title="Нажмите для обновления" onclick="refreshWeather()">
-                <div class="wgt-icon" id="w-ico">🌤️</div>
-                <div class="wgt-val" id="w-temp">—</div>
-                <div class="wgt-lbl" id="w-city">Погода</div>
+            <div class="wgt" onclick="refreshWeather()" style="cursor:pointer">
+                <div class="wgt-ic">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                </div>
+                <div class="wgt-val" id="wTemp">—</div>
+                <div class="wgt-lbl" id="wCity">Погода</div>
                 <div class="city-row" onclick="event.stopPropagation()">
-                    <input type="text" class="city-in" id="cityIn" placeholder="Город..." onkeydown="if(event.key==='Enter')lookupCity()">
-                    <button class="city-go" onclick="lookupCity()">→</button>
+                    <input class="city-in" id="cityIn" type="text" placeholder="Город..." onkeydown="if(event.key==='Enter')lookupCity()">
+                    <button class="city-go" onclick="lookupCity()">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
                 </div>
             </div>
-            <!-- USD/BYN -->
+            <!-- USD -->
             <div class="wgt">
-                <div class="wgt-icon">💵</div>
-                <div class="wgt-val" id="w-usd">—</div>
+                <div class="wgt-ic">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="wgt-val" id="wUsd">—</div>
                 <div class="wgt-lbl">USD / BYN</div>
-                <div class="wgt-sub" id="w-usd-date">НБРБ</div>
+                <div class="wgt-sub" id="wUsdD">НБРБ</div>
             </div>
-            <!-- EUR/BYN -->
+            <!-- EUR -->
             <div class="wgt">
-                <div class="wgt-icon">💶</div>
-                <div class="wgt-val" id="w-eur">—</div>
+                <div class="wgt-ic">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="wgt-val" id="wEur">—</div>
                 <div class="wgt-lbl">EUR / BYN</div>
-                <div class="wgt-sub" id="w-eur-date">НБРБ</div>
+                <div class="wgt-sub" id="wEurD">НБРБ</div>
             </div>
             <!-- Калькулятор -->
             <div class="wgt">
-                <div class="wgt-icon">🧮</div>
-                <input type="text" class="wgt-input" id="calcIn" placeholder="2+2×3..." oninput="calcWidget()">
-                <div class="wgt-val" id="calcOut" style="font-size:1.1rem;">—</div>
+                <div class="wgt-ic">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="14" y1="16" x2="18" y2="16"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="12" y1="14" x2="12" y2="18"/></svg>
+                </div>
+                <input class="wgt-in" id="calcIn" type="text" placeholder="2+2×3..." oninput="calcW()">
+                <div class="wgt-val" id="calcOut" style="font-size:1rem">—</div>
                 <div class="wgt-lbl">Калькулятор</div>
             </div>
         </div>
-    </div>
 
-    <footer class="footer" style="margin-top:auto;">
-        ZORNET &copy; 2024 &nbsp;·&nbsp; Зроблена ў Беларусі 🇧🇾
-    </footer>
+    </div>
 </div>
 
-<!-- ================================================================
+<!-- ════════════════════════════════════════════════════
      СТРАНИЦА РЕЗУЛЬТАТОВ
-     ================================================================ -->
-<div id="pg-results">
+     ════════════════════════════════════════════════════ -->
+<div id="pgResults">
 
     <!-- Шапка -->
-    <header class="res-header">
-        <span class="logo logo-sm" onclick="goHome()" style="cursor:pointer;flex-shrink:0;">ZORNET</span>
-        <div class="res-header-search" style="position:relative;">
-            <div class="search-wrap">
-                <input class="search-box" id="resQ" type="text"
-                    style="height:44px;font-size:.9rem;"
+    <header class="res-hdr">
+        <span class="logo logo-sm" onclick="goHome()">ZORNET</span>
+        <div class="hdr-s">
+            <div class="sw">
+                <input class="si si-sm" id="resQ" type="text"
                     placeholder="Поиск..."
                     autocomplete="off"
                     onkeydown="if(event.key==='Enter')doSearch()"
-                    oninput="onQueryInput(this.value,'resSug')">
-                <button class="search-btn" style="width:36px;height:36px;" onclick="doSearch()">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    oninput="onInp(this.value,'resSug')">
+                <button class="sb sb-sm" onclick="doSearch()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </button>
             </div>
-            <div class="suggestions hidden" id="resSug"></div>
+            <div class="sug hidden" id="resSug"></div>
         </div>
-        <div class="res-header-right">
-            <div class="theme-sw">
-                <button class="th-btn" data-t="light" onclick="setTheme('light')">☀️</button>
-                <button class="th-btn" data-t="dark" onclick="setTheme('dark')">🌙</button>
-                <button class="th-btn active" data-t="auto" onclick="setTheme('auto')">✨</button>
-            </div>
+        <!-- Бадж текущего поисковика -->
+        <div class="engine-badge" id="engineBadge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg>
+            <span id="engineBadgeName">DuckDuckGo</span>
         </div>
     </header>
 
     <!-- Фильтры -->
     <div class="filters">
-        <button class="ftab active" id="ft-web" onclick="setFilter('web')">🌐 Все</button>
-        <button class="ftab" id="ft-image" onclick="setFilter('image')">🖼️ Картинки</button>
-        <button class="ftab" id="ft-news" onclick="setFilter('news')">📰 Новости</button>
+        <button class="ftab active" id="ft-web" onclick="setFilter('web')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Все
+        </button>
+        <button class="ftab" id="ft-img" onclick="setFilter('img')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Картинки
+        </button>
+        <button class="ftab" id="ft-news" onclick="setFilter('news')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0-2-2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><line x1="18" y1="14" x2="12" y2="14"/><line x1="18" y1="10" x2="12" y2="10"/></svg>
+            Новости
+        </button>
+        <button class="ftab" id="ft-video" onclick="setFilter('video')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Видео
+        </button>
+        <button class="ftab" id="ft-maps" onclick="setFilter('maps')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            Карты
+        </button>
+
+        <!-- Смена поисковика на странице результатов -->
+        <div style="margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="etab active" id="ret-ddg"    onclick="setEngine('ddg')">DDG</button>
+            <button class="etab"        id="ret-bing"   onclick="setEngine('bing')">Bing</button>
+            <button class="etab"        id="ret-google" onclick="setEngine('google')">Google</button>
+            <button class="etab"        id="ret-brave"  onclick="setEngine('brave')">Brave</button>
+            <button class="etab"        id="ret-yandex" onclick="setEngine('yandex')">Яндекс</button>
+        </div>
     </div>
 
-    <!-- Тело результатов -->
+    <!-- Тело -->
     <div class="res-body">
-        <!-- ЛЕВАЯ КОЛОНКА -->
-        <div id="res-left">
+
+        <!-- ЛЕВАЯ: iframe поиск -->
+        <div id="resLeft">
+            <!-- Zero-click -->
             <div id="quickBlock"></div>
+            <!-- Конвертер -->
             <div id="convBlock"></div>
-            <div class="search-info" id="searchInfo"></div>
-            <div id="resultsList"></div>
-            <div class="pagination hidden" id="pg">
-                <button class="pg-btn" id="pgPrev" onclick="changePage(-1)" disabled>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-                    Назад
-                </button>
-                <span class="pg-info" id="pgInfo">Стр. 1</span>
-                <button class="pg-btn" id="pgNext" onclick="changePage(1)">
-                    Вперёд
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+
+            <!-- IFRAME КОНТЕЙНЕР -->
+            <div class="iframe-container">
+                <div class="frame-cover" id="frameCover">
+                    <div class="spin lg"></div>
+                    <p id="frameMsg">Загрузка результатов...</p>
+                </div>
+                <iframe
+                    id="searchFrame"
+                    title="Результаты поиска"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
+                    referrerpolicy="no-referrer"
+                    onload="frameLoaded()"
+                    onerror="frameError()"
+                ></iframe>
+            </div>
+
+            <!-- Кнопки навигации (запасной вариант) -->
+            <div class="pgn" id="pgn" style="display:none">
+                <button class="pg-btn" onclick="openExternal()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Открыть в новой вкладке
                 </button>
             </div>
         </div>
 
-        <!-- ПРАВАЯ КОЛОНКА — AI -->
-        <div id="res-right" class="res-right">
+        <!-- ПРАВАЯ: AI + виджеты -->
+        <div id="resRight" class="res-right">
             <!-- Мини-виджеты -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;">
-                <div class="wgt" style="padding:11px 10px;">
-                    <div class="wgt-icon" id="sw-ico">🌤️</div>
-                    <div class="wgt-val" id="sw-temp" style="font-size:1.05rem;">—</div>
-                    <div class="wgt-lbl" id="sw-city" style="font-size:.62rem;">Погода</div>
+            <div class="side-wgts">
+                <div class="swgt">
+                    <div class="swgt-ic">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                    </div>
+                    <div class="swgt-val" id="swTemp">—</div>
+                    <div class="swgt-lbl" id="swCity">Погода</div>
                 </div>
-                <div class="wgt" style="padding:11px 10px;">
-                    <div class="wgt-icon">💵</div>
-                    <div class="wgt-val" id="sw-usd" style="font-size:1.05rem;">—</div>
-                    <div class="wgt-lbl" style="font-size:.62rem;">USD/BYN</div>
+                <div class="swgt">
+                    <div class="swgt-ic">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="swgt-val" id="swUsd">—</div>
+                    <div class="swgt-lbl">USD / BYN</div>
                 </div>
             </div>
 
             <!-- AI виджет -->
-            <div class="ai-box" id="aiBox">
-                <div class="ai-head">
-                    <div class="ai-head-ico">✦</div>
-                    <div>
-                        <div class="ai-head-name">ZORNET AI</div>
-                        <div class="ai-head-sub">Groq — быстрый ИИ</div>
+            <div class="ai-box">
+                <div class="ai-hdr">
+                    <div class="ai-hdr-ico">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     </div>
-                    <div class="ai-status-dot" id="aiDot"></div>
+                    <div>
+                        <div class="ai-hdr-name">ZORNET AI</div>
+                        <div class="ai-hdr-sub">Groq · Llama 3.3 · Бесплатно</div>
+                    </div>
+                    <div class="ai-dot" id="aiDot"></div>
                 </div>
                 <div class="ai-chat" id="aiChat">
-                    <div class="ai-placeholder" id="aiPH">
-                        <div class="ai-placeholder-ico">✦</div>
-                        <p>Задайте вопрос или нажмите кнопку ниже — ИИ проанализирует ваш запрос</p>
-                        <button class="ask-btn" onclick="askGroqSearch()">✦ Спросить у ИИ</button>
+                    <div class="ai-ph" id="aiPH">
+                        <div class="ai-ph-ico">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <p>Задайте вопрос или нажмите кнопку — ИИ проанализирует ваш запрос</p>
+                        <button class="ask-btn" onclick="askGroq()">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            Спросить у ИИ
+                        </button>
                     </div>
                 </div>
-                <div class="ai-footer">
+                <div class="ai-foot">
                     <input class="ai-in" id="aiIn" type="text" placeholder="Задайте вопрос..." onkeydown="if(event.key==='Enter')sendAI()">
                     <button class="ai-send" onclick="sendAI()">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="M22 2 11 13"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer class="footer">
-        ZORNET &copy; 2024 &nbsp;·&nbsp; Поиск: Google Custom Search &nbsp;·&nbsp; ИИ: Groq API &nbsp;·&nbsp; 🇧🇾 Беларусь
-    </footer>
 </div>
 
-<!-- ================================================================
-     FAB КНОПКА AI (мобильная)
-     ================================================================ -->
-<button class="ai-fab" id="aiFab" onclick="openSheet()">✦</button>
+<!-- FAB -->
+<button class="ai-fab" id="aiFab" onclick="openSheet()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+</button>
 
-<!-- ================================================================
-     AI BOTTOM SHEET (мобильный)
-     ================================================================ -->
+<!-- Bottom Sheet -->
 <div class="ai-sheet" id="aiSheet">
-    <div class="sheet-handle" onclick="closeSheet()"></div>
-    <div class="ai-head" style="margin:0 14px;border-radius:14px;">
-        <div class="ai-head-ico">✦</div>
+    <div class="sh-handle" onclick="closeSheet()"></div>
+    <div class="ai-hdr" style="margin:0 12px;border-radius:13px;">
+        <div class="ai-hdr-ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
         <div>
-            <div class="ai-head-name">ZORNET AI (Groq)</div>
-            <div class="ai-head-sub">Быстрый ИИ-ассистент</div>
+            <div class="ai-hdr-name">ZORNET AI</div>
+            <div class="ai-hdr-sub">Groq · Llama 3.3</div>
         </div>
-        <button onclick="closeSheet()" style="background:rgba(0,0,0,.1);border:none;border-radius:50%;width:26px;height:26px;margin-left:auto;font-size:14px;display:flex;align-items:center;justify-content:center;">✕</button>
+        <button onclick="closeSheet()" style="background:rgba(0,0,0,.1);border:none;border-radius:50%;width:25px;height:25px;margin-left:auto;display:flex;align-items:center;justify-content:center;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
     </div>
-    <div class="ai-chat" id="aiChatM" style="flex:1;overflow-y:auto;min-height:160px;max-height:100%;">
-        <div class="ai-placeholder" id="aiPHM">
-            <div class="ai-placeholder-ico">✦</div>
+    <div class="ai-chat" id="aiChatM" style="flex:1;overflow-y:auto;min-height:150px;max-height:100%">
+        <div class="ai-ph" id="aiPHM">
+            <div class="ai-ph-ico">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
             <p>Задайте вопрос ИИ-ассистенту</p>
-            <button class="ask-btn" onclick="askGroqSearch('m')">✦ Спросить о запросе</button>
+            <button class="ask-btn" onclick="askGroq('m')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Спросить о запросе
+            </button>
         </div>
     </div>
-    <div class="ai-footer" style="border-top:1px solid var(--border);">
+    <div class="ai-foot" style="border-top:1px solid var(--border)">
         <input class="ai-in" id="aiInM" type="text" placeholder="Ваш вопрос..." onkeydown="if(event.key==='Enter')sendAI('m')">
         <button class="ai-send" onclick="sendAI('m')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="M22 2 11 13"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
     </div>
 </div>
 
-<!-- ================================================================
-     ГЛАВНЫЙ СКРИПТ
-     ================================================================ -->
 <script>
 /* ================================================================
-   КОНФИГ — ВСТАВЬТЕ СВОИ КЛЮЧИ ЗДЕСЬ (только для разработки)
-   В продакшене ключи должны быть на сервере!
+   КОНФИГ — вставьте только Groq ключ (бесплатно)
+   Получить: https://console.groq.com/
    ================================================================ */
 const CFG = {
-    // Google Custom Search JSON API
-    // Получить: https://developers.google.com/custom-search/v1/introduction
-    GOOGLE_KEY: 'ВСТАВЬТЕ_GOOGLE_API_KEY',
-    // Search Engine ID (cx)
-    // Создать: https://programmablesearchengine.google.com/
-    GOOGLE_CX: 'ВСТАВЬТЕ_SEARCH_ENGINE_ID',
-    // Groq API — бесплатно: https://console.groq.com/
-    GROQ_KEY: 'ВСТАВЬТЕ_GROQ_API_KEY',
-    // Модель Groq (бесплатные модели)
+    GROQ_KEY  : 'ВСТАВЬТЕ_GROQ_API_KEY',
     GROQ_MODEL: 'llama-3.3-70b-versatile'
+};
+
+/* ================================================================
+   ПОИСКОВЫЕ ДВИЖКИ — URL шаблоны
+   ================================================================ */
+const ENGINES = {
+    ddg: {
+        name  : 'DuckDuckGo',
+        web   : q => `https://duckduckgo.com/?q=${q}&kl=ru-ru&k1=-1&kp=-2`,
+        img   : q => `https://duckduckgo.com/?q=${q}&iax=images&ia=images&kl=ru-ru`,
+        news  : q => `https://duckduckgo.com/?q=${q}&iar=news&ia=news&kl=ru-ru`,
+        video : q => `https://duckduckgo.com/?q=${q}&iax=videos&ia=videos&kl=ru-ru`,
+        maps  : q => `https://duckduckgo.com/?q=${q}&iaxm=maps&ia=maps`,
+    },
+    bing: {
+        name  : 'Bing',
+        web   : q => `https://www.bing.com/search?q=${q}&setlang=ru`,
+        img   : q => `https://www.bing.com/images/search?q=${q}&setlang=ru`,
+        news  : q => `https://www.bing.com/news/search?q=${q}&setlang=ru`,
+        video : q => `https://www.bing.com/videos/search?q=${q}&setlang=ru`,
+        maps  : q => `https://www.bing.com/maps?q=${q}`,
+    },
+    google: {
+        name  : 'Google',
+        web   : q => `https://www.google.com/search?q=${q}&hl=ru`,
+        img   : q => `https://www.google.com/search?q=${q}&tbm=isch&hl=ru`,
+        news  : q => `https://www.google.com/search?q=${q}&tbm=nws&hl=ru`,
+        video : q => `https://www.google.com/search?q=${q}&tbm=vid&hl=ru`,
+        maps  : q => `https://www.google.com/maps/search/${q}`,
+    },
+    brave: {
+        name  : 'Brave',
+        web   : q => `https://search.brave.com/search?q=${q}&lang=ru`,
+        img   : q => `https://search.brave.com/images?q=${q}&lang=ru`,
+        news  : q => `https://search.brave.com/news?q=${q}&lang=ru`,
+        video : q => `https://search.brave.com/videos?q=${q}&lang=ru`,
+        maps  : q => `https://search.brave.com/search?q=${q}+maps&lang=ru`,
+    },
+    yandex: {
+        name  : 'Яндекс',
+        web   : q => `https://yandex.ru/search/?text=${q}`,
+        img   : q => `https://yandex.ru/images/search?text=${q}`,
+        news  : q => `https://news.yandex.ru/search.html?text=${q}`,
+        video : q => `https://yandex.ru/video/search?text=${q}`,
+        maps  : q => `https://yandex.ru/maps/?text=${q}`,
+    }
 };
 
 /* ================================================================
    СОСТОЯНИЕ
    ================================================================ */
 const S = {
-    query: '',
-    page: 1,
-    filter: 'web',
-    totalResults: 0,
-    chatD: [],   // История десктоп
-    chatM: [],   // История мобиль
-    thinking: false,
-    searching: false,
-    rates: {},   // Курсы НБРБ (в BYN)
-    theme: 'auto'
+    q      : '',
+    engine : localStorage.getItem('z_engine') || 'ddg',
+    filter : 'web',
+    chatD  : [],
+    chatM  : [],
+    busy   : false,
+    rates  : {}
 };
 
 /* ================================================================
    ИНИЦИАЛИЗАЦИЯ
    ================================================================ */
 window.addEventListener('DOMContentLoaded', () => {
-    // Тема
-    S.theme = localStorage.getItem('z_theme') || 'auto';
-    applyTheme();
-
-    // Данные
+    // Применяем сохранённый движок
+    applyEngineUI();
     loadRates();
     initWeather();
 
-    // URL параметры
+    // Параметры URL
     const p = new URLSearchParams(location.search);
     if (p.get('q')) {
-        S.query = p.get('q');
-        syncInputs();
+        S.q = p.get('q');
+        if (p.get('e')) S.engine = p.get('e');
+        syncQ();
         showResults();
-        execSearch();
+        loadFrame();
     }
-});
-
-/* ================================================================
-   ТЕМА
-   ================================================================ */
-function setTheme(t) {
-    S.theme = t;
-    localStorage.setItem('z_theme', t);
-    applyTheme();
-}
-
-function applyTheme() {
-    const pDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = S.theme === 'dark' || (S.theme === 'auto' && pDark);
-    document.documentElement.classList.toggle('dark', isDark);
-    // Обновляем все кнопки переключателя
-    document.querySelectorAll('.th-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.t === S.theme);
-    });
-}
-
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (S.theme === 'auto') applyTheme();
 });
 
 /* ================================================================
    НАВИГАЦИЯ
    ================================================================ */
 function showHome() {
-    document.getElementById('pg-home').style.display = 'flex';
-    document.getElementById('pg-results').style.display = 'none';
-    document.getElementById('aiFab').style.display = 'none';
+    document.getElementById('pgHome').style.display    = 'flex';
+    document.getElementById('pgResults').style.display = 'none';
+    document.getElementById('aiFab').style.display     = 'none';
     closeSheet();
 }
-
 function showResults() {
-    document.getElementById('pg-home').style.display = 'none';
-    document.getElementById('pg-results').style.display = 'flex';
-    document.getElementById('aiFab').style.display = 'flex';
+    document.getElementById('pgHome').style.display    = 'none';
+    document.getElementById('pgResults').style.display = 'flex';
+    document.getElementById('aiFab').style.display     = 'flex';
 }
-
 function goHome() {
     showHome();
+    S.q = '';
     document.getElementById('homeQ').value = '';
-    S.query = '';
     document.getElementById('homeQuick').innerHTML = '';
 }
 
 /* ================================================================
-   ПОИСК
+   ПОИСКОВЫЙ ДВИЖОК
    ================================================================ */
-function doSearch() {
-    // Берём запрос из активной страницы
-    const isRes = document.getElementById('pg-results').style.display === 'flex';
-    const val = isRes
-        ? document.getElementById('resQ').value.trim()
-        : document.getElementById('homeQ').value.trim();
-
-    if (!val) { toast('Введите запрос', 'err'); return; }
-
-    S.query = val;
-    S.page = 1;
-    syncInputs();
-    hideSug();
-
-    // Zero-click на главной
-    const qr = zeroClick(val);
-    renderHomeQuick(qr);
-
-    showResults();
-    execSearch();
-
-    // Сбрасываем AI при новом поиске
-    S.chatD = []; S.chatM = [];
-    renderChat('d'); renderChat('m');
+function setEngine(e) {
+    S.engine = e;
+    localStorage.setItem('z_engine', e);
+    applyEngineUI();
+    // Если уже на странице результатов — перезагружаем фрейм
+    if (document.getElementById('pgResults').style.display === 'flex' && S.q) {
+        loadFrame();
+    }
 }
 
-function syncInputs() {
-    document.getElementById('homeQ').value = S.query;
-    document.getElementById('resQ').value = S.query;
+function applyEngineUI() {
+    // Главная — кнопки выбора
+    Object.keys(ENGINES).forEach(k => {
+        const el = document.getElementById('et-' + k);
+        if (el) el.classList.toggle('active', k === S.engine);
+        const rel = document.getElementById('ret-' + k);
+        if (rel) rel.classList.toggle('active', k === S.engine);
+    });
+    // Бадж
+    const bn = document.getElementById('engineBadgeName');
+    if (bn) bn.textContent = ENGINES[S.engine]?.name || S.engine;
+}
+
+/* ================================================================
+   ПОИСК — ОСНОВНАЯ ЛОГИКА
+   ================================================================ */
+function doSearch() {
+    const isRes = document.getElementById('pgResults').style.display === 'flex';
+    const v = (isRes
+        ? document.getElementById('resQ').value
+        : document.getElementById('homeQ').value).trim();
+    if (!v) { toast('Введите запрос', 'err'); return; }
+
+    S.q = v;
+    S.filter = 'web';
+    syncQ();
+    hideSug();
+    updateFilterUI();
+
+    // Zero-click
+    renderHomeQuick(zeroClick(v));
+
+    showResults();
+    loadFrame();
+
+    // Сброс AI при новом запросе
+    S.chatD = []; S.chatM = [];
+    renderChat('d'); renderChat('m');
+
+    addHist(v);
+}
+
+function syncQ() {
+    document.getElementById('homeQ').value = S.q;
+    document.getElementById('resQ').value  = S.q;
 }
 
 function setFilter(f) {
     S.filter = f;
-    S.page = 1;
-    ['web','image','news'].forEach(k => {
-        document.getElementById('ft-' + k).classList.toggle('active', k === f);
-    });
-    if (S.query) execSearch();
+    updateFilterUI();
+    if (S.q) loadFrame();
 }
 
-function changePage(d) {
-    S.page = Math.max(1, S.page + d);
-    execSearch();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function updateFilterUI() {
+    ['web','img','news','video','maps'].forEach(k => {
+        document.getElementById('ft-' + k)?.classList.toggle('active', k === S.filter);
+    });
 }
 
-/* ----------------------------------------------------------------
-   РЕАЛЬНЫЙ ЗАПРОС: Google Custom Search JSON API
-   ---------------------------------------------------------------- */
-async function execSearch() {
-    if (S.searching) return;
-    S.searching = true;
-    showLoading();
+/* ================================================================
+   ЗАГРУЗКА IFRAME
+   ================================================================ */
+function loadFrame() {
+    const frame  = document.getElementById('searchFrame');
+    const cover  = document.getElementById('frameCover');
+    const msg    = document.getElementById('frameMsg');
+    const pgn    = document.getElementById('pgn');
 
-    // Проверка ключей
-    if (!CFG.GOOGLE_KEY || CFG.GOOGLE_KEY.startsWith('ВСТАВЬТЕ') ||
-        !CFG.GOOGLE_CX  || CFG.GOOGLE_CX.startsWith('ВСТАВЬТЕ')) {
-        S.searching = false;
-        showErrState(
-            '⚙️ Ключи не настроены',
-            'Google API Key и Search Engine ID не заданы. Откройте файл HTML и вставьте ключи в объект CFG в начале скрипта.',
-            true
-        );
-        return;
-    }
+    // Показываем лоадер
+    cover.classList.remove('gone');
+    frame.classList.remove('loaded');
+    if (msg) msg.textContent = `Ищем «${S.q}» в ${ENGINES[S.engine].name}...`;
 
-    // Параметры запроса
-    const start = (S.page - 1) * 10 + 1;
-    const params = new URLSearchParams({
-        key: CFG.GOOGLE_KEY,
-        cx:  CFG.GOOGLE_CX,
-        q:   S.query,
-        start: String(start),
-        num: '10',
-        hl: 'ru',
-        gl: 'by'
-    });
+    // Zero-click блоки
+    renderQuickBlock(zeroClick(S.q));
+    renderConvBlock(parseConv(S.q));
 
-    if (S.filter === 'image') {
-        params.set('searchType', 'image');
-    } else if (S.filter === 'news') {
-        params.set('sort', 'date');
-        params.set('dateRestrict', 'd7');
-    }
+    // Формируем URL
+    const eng = ENGINES[S.engine];
+    const filterFn = eng[S.filter] || eng.web;
+    const url = filterFn(encodeURIComponent(S.q));
 
-    const url = `https://www.googleapis.com/customsearch/v1?${params}`;
+    // Устанавливаем src фрейма
+    frame.src = url;
 
+    // Таймаут — если фрейм не загрузится (CORS блок)
+    // Показываем кнопку "Открыть в новой вкладке"
+    const timeout = setTimeout(() => {
+        cover.classList.remove('gone');
+        if (msg) msg.textContent = 'Если результаты не видны — откройте в новой вкладке';
+        pgn.style.display = 'flex';
+    }, 6000);
+
+    frame._openUrl = url;
+    frame._timeout = timeout;
+}
+
+function frameLoaded() {
+    const frame = document.getElementById('searchFrame');
+    const cover = document.getElementById('frameCover');
+    clearTimeout(frame._timeout);
+
+    // Пробуем определить — загрузился контент или заблокирован
     try {
-        const resp = await fetch(url);
-        if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
-            const msg = err?.error?.message || `HTTP ${resp.status}`;
-            if (resp.status === 403) throw new Error('Доступ запрещён. Проверьте Google API Key.');
-            if (resp.status === 400) throw new Error('Неверный Search Engine ID (cx).');
-            if (resp.status === 429) throw new Error('Превышен лимит Google API (100 запросов/день бесплатно).');
-            throw new Error(msg);
-        }
+        // Если доступ есть — скрываем лоадер
+        const title = frame.contentDocument?.title;
+        cover.classList.add('gone');
+        frame.classList.add('loaded');
 
-        const data = await resp.json();
-        S.searching = false;
-        renderResults(data);
+        // Авто-высота фрейма
+        try {
+            const h = frame.contentDocument?.body?.scrollHeight;
+            if (h && h > 400) frame.style.minHeight = h + 'px';
+        } catch(_) {}
 
     } catch(e) {
-        S.searching = false;
-        console.error('[ZORNET] Search error:', e);
-        showErrState('Ошибка поиска', e.message);
+        // Cross-origin — значит страница загрузилась (просто не можем читать)
+        // Это нормально — контент всё равно отображается
+        cover.classList.add('gone');
+        frame.classList.add('loaded');
     }
 }
 
-function showLoading() {
-    document.getElementById('searchInfo').textContent = '';
-    document.getElementById('quickBlock').innerHTML = '';
-    document.getElementById('convBlock').innerHTML = '';
-    document.getElementById('pg').classList.add('hidden');
-    document.getElementById('resultsList').innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;padding:50px 20px;gap:14px;">
-            <div class="spinner lg"></div>
-            <p style="color:var(--text3);font-size:.9rem;">Ищем «${esc(S.query)}»...</p>
-        </div>`;
+function frameError() {
+    const cover = document.getElementById('frameCover');
+    const msg   = document.getElementById('frameMsg');
+    const pgn   = document.getElementById('pgn');
+    cover.classList.remove('gone');
+    if (msg) msg.textContent = 'Не удалось загрузить результаты';
+    pgn.style.display = 'flex';
 }
 
-function renderResults(data) {
-    const total = parseInt(data?.searchInformation?.totalResults || 0);
-    const time  = parseFloat(data?.searchInformation?.searchTime || 0).toFixed(2);
-    S.totalResults = total;
-
-    // Инфо
-    if (total > 0) {
-        document.getElementById('searchInfo').textContent =
-            `Примерно ${fmtNum(total)} результатов (${time} с.)`;
-    }
-
-    const items = data?.items || [];
-
-    if (!items.length) {
-        document.getElementById('resultsList').innerHTML = `
-            <div class="empty-state">
-                <div class="es-ico">🔍</div>
-                <h3>Ничего не найдено</h3>
-                <p>Попробуйте изменить запрос или фильтр поиска</p>
-            </div>`;
-        document.getElementById('pg').classList.add('hidden');
-        return;
-    }
-
-    // Zero-click и конвертер
-    const qr = zeroClick(S.query);
-    renderQuickBlock(qr);
-    const conv = parseConverter(S.query);
-    renderConvBlock(conv);
-
-    // Рендер результатов
-    if (S.filter === 'image') {
-        renderImages(items);
-    } else {
-        renderWeb(items);
-    }
-
-    // Пагинация
-    const maxPg = Math.min(10, Math.ceil(total / 10));
-    if (maxPg > 1) {
-        document.getElementById('pg').classList.remove('hidden');
-        document.getElementById('pgPrev').disabled = S.page <= 1;
-        document.getElementById('pgNext').disabled = S.page >= maxPg;
-        document.getElementById('pgInfo').textContent = `Стр. ${S.page} из ${maxPg}`;
-    } else {
-        document.getElementById('pg').classList.add('hidden');
-    }
-
-    // Добавляем в историю
-    addHistory(S.query);
-}
-
-function renderWeb(items) {
-    document.getElementById('resultsList').innerHTML = items.map((item, i) => {
-        const title   = esc(item.title || 'Без названия');
-        const link    = item.link || '#';
-        const snippet = esc(item.snippet || '');
-        const domain  = item.displayLink || tryGetDomain(link);
-        const fav     = `https://www.google.com/s2/favicons?domain=${domain}&sz=16`;
-        return `
-        <div class="result-item" style="animation-delay:${i*0.045}s">
-            <div class="r-site">
-                <img class="r-favicon" src="${fav}" alt="" onerror="this.style.display='none'">
-                <span class="r-domain">${esc(domain)}</span>
-            </div>
-            <a class="r-title" href="${link}" target="_blank" rel="noopener">${title}</a>
-            <p class="r-snippet">${snippet}</p>
-        </div>`;
-    }).join('');
-}
-
-function renderImages(items) {
-    document.getElementById('resultsList').innerHTML = `
-        <div class="img-grid">
-            ${items.map(item => {
-                const src   = item.link || '';
-                const title = esc(item.title || '');
-                const ctx   = item.image?.contextLink || '#';
-                return `
-                <div class="img-card" onclick="window.open('${ctx}','_blank')">
-                    <img src="${src}" alt="${title}" loading="lazy" onerror="this.parentElement.style.display='none'">
-                    <div class="img-card-title">${title.slice(0,55)}${title.length>55?'...':''}</div>
-                </div>`;
-            }).join('')}
-        </div>`;
-}
-
-function showErrState(title, msg, isConfig = false) {
-    document.getElementById('searchInfo').textContent = '';
-    document.getElementById('resultsList').innerHTML = `
-        <div class="empty-state">
-            <div class="es-ico">⚠️</div>
-            <h3>${esc(title)}</h3>
-            <p>${esc(msg)}</p>
-            ${isConfig ? `<p style="margin-top:12px;font-size:.8rem;color:var(--text3);">Файл → найдите объект <code style="background:var(--bg3);padding:2px 6px;border-radius:5px;">CFG</code> → вставьте ключи</p>` : ''}
-        </div>`;
-    document.getElementById('pg').classList.add('hidden');
+function openExternal() {
+    const frame = document.getElementById('searchFrame');
+    if (frame._openUrl) window.open(frame._openUrl, '_blank');
 }
 
 /* ================================================================
    ZERO-CLICK БЫСТРЫЕ ОТВЕТЫ
    ================================================================ */
 function zeroClick(q) {
-    // Калькулятор
-    const calc = tryCalc(q);
-    if (calc !== null) return { type:'calc', ico:'🧮', res: fmtNum(calc), lbl:`Результат: ${q}` };
-
-    // Температура
-    const temp = tryTemp(q);
-    if (temp) return { type:'temp', ico:'🌡️', res: temp.res, lbl: temp.lbl };
-
+    const c = tryCalc(q);
+    if (c !== null) return { type:'calc', val: fmtN(c), lbl:`Результат: ${q}` };
+    const t = tryTemp(q);
+    if (t) return { type:'temp', val: t.res, lbl: t.lbl };
     return null;
 }
 
-function renderHomeQuick(r) {
-    const el = document.getElementById('homeQuick');
-    if (!r) { el.innerHTML = ''; return; }
-    el.innerHTML = `
-        <div class="quick-card">
-            <div class="quick-emoji">${r.ico}</div>
-            <div>
-                <div class="quick-res">${r.res}</div>
-                <div class="quick-lbl">${r.lbl}</div>
-            </div>
-        </div>`;
-}
-
-function renderQuickBlock(r) {
-    const el = document.getElementById('quickBlock');
-    if (!r) { el.innerHTML = ''; return; }
-    el.innerHTML = `
-        <div class="quick-card" style="margin-bottom:16px;">
-            <div class="quick-emoji">${r.ico}</div>
-            <div>
-                <div class="quick-res">${r.res}</div>
-                <div class="quick-lbl">${r.lbl}</div>
-            </div>
-        </div>`;
-}
-
 function tryCalc(q) {
-    let expr = q.trim()
-        .replace(/\s/g,'')
-        .replace(/[xX×]/g,'*')
-        .replace(/÷/g,'/')
-        .replace(/²/g,'**2')
-        .replace(/³/g,'**3');
-    // Проверяем что содержит операторы
-    if (!/[\+\-\*\/\^()]/.test(expr)) return null;
-    // Только цифры и математические символы
-    if (!/^[\d\.\+\-\*\/\(\)\^eE]+$/.test(expr)) return null;
+    let e = q.trim().replace(/\s/g,'').replace(/[xX×]/g,'*').replace(/÷/g,'/').replace(/²/g,'**2').replace(/³/g,'**3');
+    if (!/[\+\-\*\/\^()]/.test(e)) return null;
+    if (!/^[\d\.\+\-\*\/\(\)\^eE]+$/.test(e)) return null;
     try {
-        const r = Function(`"use strict";return(${expr})`)();
+        const r = Function(`"use strict";return(${e})`)();
         if (typeof r === 'number' && isFinite(r)) return Math.round(r * 1e7) / 1e7;
-    } catch(_){}
+    } catch(_) {}
     return null;
 }
 
 function tryTemp(q) {
-    const cToF = q.match(/(-?\d+(?:\.\d+)?)\s*(?:°?c|celsius|цельс\w*)\s*(?:в|to|in)\s*(?:°?f|fahrenheit|фаренг\w*)/i);
-    if (cToF) {
-        const c = +cToF[1], f = c*9/5+32;
-        return { res:`${f.toFixed(1)}°F`, lbl:`${c}°C → °F` };
-    }
-    const fToC = q.match(/(-?\d+(?:\.\d+)?)\s*(?:°?f|fahrenheit|фаренг\w*)\s*(?:в|to|in)\s*(?:°?c|celsius|цельс\w*)/i);
-    if (fToC) {
-        const f = +fToC[1], c = (f-32)*5/9;
-        return { res:`${c.toFixed(1)}°C`, lbl:`${f}°F → °C` };
-    }
+    const cF = q.match(/(-?\d+(?:\.\d+)?)\s*(?:°?c|celsius|цельс\w*)\s*(?:в|to)\s*(?:°?f|fahrenheit|фаренг\w*)/i);
+    if (cF) { const c=+cF[1],f=c*9/5+32; return { res:`${f.toFixed(1)}°F`, lbl:`${c}°C → Fahrenheit` }; }
+    const fC = q.match(/(-?\d+(?:\.\d+)?)\s*(?:°?f|fahrenheit|фаренг\w*)\s*(?:в|to)\s*(?:°?c|celsius|цельс\w*)/i);
+    if (fC) { const f=+fC[1],c=(f-32)*5/9; return { res:`${c.toFixed(1)}°C`, lbl:`${f}°F → Celsius` }; }
     return null;
+}
+
+const QSVG = {
+    calc: '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="14" y1="16" x2="18" y2="16"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="12" y1="14" x2="12" y2="18"/>',
+    temp: '<path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>'
+};
+
+function qCardHTML(r) {
+    if (!r) return '';
+    return `<div class="qcard">
+        <div class="qcard-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">${QSVG[r.type]||''}</svg></div>
+        <div><div class="qcard-val">${r.val}</div><div class="qcard-lbl">${r.lbl}</div></div>
+    </div>`;
+}
+
+function renderHomeQuick(r) {
+    document.getElementById('homeQuick').innerHTML = qCardHTML(r);
+}
+function renderQuickBlock(r) {
+    document.getElementById('quickBlock').innerHTML = qCardHTML(r);
 }
 
 /* ================================================================
    КОНВЕРТЕР ВАЛЮТ
    ================================================================ */
-function parseConverter(q) {
-    const m = q.match(/^(\d+(?:\.\d+)?)\s*(usd|eur|byn|rub|uah|pln|доллар\w*|евро|рубл\w*|злот\w*|гривн\w*)\s*(?:в|to|in)\s*(usd|eur|byn|rub|uah|pln|доллар\w*|евро|рубл\w*|злот\w*|гривн\w*)/i);
+function parseConv(q) {
+    const m = q.match(/^(\d+(?:\.\d+)?)\s*(usd|eur|byn|rub|uah|pln|доллар\w*|евро|рубл\w*|гривн\w*|злот\w*)\s*(?:в|to)\s*(usd|eur|byn|rub|uah|pln|доллар\w*|евро|рубл\w*|гривн\w*|злот\w*)/i);
     if (!m) return null;
-    return { amount: +m[1], from: normCur(m[2]), to: normCur(m[3]) };
+    return { amount: +m[1], from: normC(m[2]), to: normC(m[3]) };
 }
-
-function normCur(s) {
+function normC(s) {
     s = s.toLowerCase();
     if (/usd|доллар/.test(s)) return 'USD';
-    if (/eur|евро/.test(s)) return 'EUR';
+    if (/eur|евро/.test(s))   return 'EUR';
     if (/byn|рубл|рубел/.test(s)) return 'BYN';
-    if (/rub|российск/.test(s)) return 'RUB';
-    if (/uah|гривн/.test(s)) return 'UAH';
-    if (/pln|злот/.test(s)) return 'PLN';
+    if (/rub|российск/.test(s))   return 'RUB';
+    if (/uah|гривн/.test(s))      return 'UAH';
+    if (/pln|злот/.test(s))       return 'PLN';
     return s.toUpperCase();
 }
-
-function getCurOptions(sel) {
-    return ['USD','EUR','BYN','RUB','UAH','PLN','GBP','CNY','JPY']
-        .map(c => `<option${c===sel?' selected':''}>${c}</option>`).join('');
+function cOpts(sel) {
+    return ['USD','EUR','BYN','RUB','UAH','PLN','GBP','CNY']
+        .map(c=>`<option${c===sel?' selected':''}>${c}</option>`).join('');
 }
-
 async function renderConvBlock(cv) {
     const el = document.getElementById('convBlock');
-    if (!cv) { el.innerHTML = ''; return; }
-    el.innerHTML = `
-        <div class="conv-card" style="margin-bottom:16px;">
-            <div class="conv-title">💱 Конвертер валют</div>
-            <div class="conv-row">
-                <input type="number" class="conv-in" id="cvAmt" value="${cv.amount}" oninput="recalcConv()">
-                <select class="conv-sel" id="cvFrom" onchange="recalcConv()">${getCurOptions(cv.from)}</select>
-                <span style="color:var(--text3);">→</span>
-                <select class="conv-sel" id="cvTo" onchange="recalcConv()">${getCurOptions(cv.to)}</select>
-            </div>
-            <div class="conv-eq">
-                <span style="color:var(--text2);font-size:.85rem;">${cv.amount} ${cv.from} =</span>
-                <span class="conv-result" id="cvRes">…</span>
-            </div>
-            <div style="font-size:.68rem;color:var(--text3);margin-top:3px;" id="cvRate">Курс: НБРБ</div>
-        </div>`;
-    await recalcConv();
+    if (!cv) { el.innerHTML=''; return; }
+    el.innerHTML = `<div class="conv-card">
+        <div class="conv-title">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            Конвертер валют
+        </div>
+        <div class="conv-row">
+            <input type="number" class="conv-in" id="cvA" value="${cv.amount}" oninput="recalcC()">
+            <select class="conv-sel" id="cvF" onchange="recalcC()">${cOpts(cv.from)}</select>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <select class="conv-sel" id="cvT" onchange="recalcC()">${cOpts(cv.to)}</select>
+        </div>
+        <div class="conv-eq">
+            <span style="color:var(--text2);font-size:.82rem">${cv.amount} ${cv.from} = </span>
+            <span class="conv-res" id="cvR">…</span>
+        </div>
+        <div style="font-size:.63rem;color:var(--text3);margin-top:3px" id="cvRI">НБРБ</div>
+    </div>`;
+    await recalcC();
 }
-
-async function recalcConv() {
-    const amtEl = document.getElementById('cvAmt');
-    const frEl  = document.getElementById('cvFrom');
-    const toEl  = document.getElementById('cvTo');
-    const resEl = document.getElementById('cvRes');
-    const rtEl  = document.getElementById('cvRate');
-    if (!amtEl) return;
-    const amt = +amtEl.value || 0;
-    const fr  = frEl.value;
-    const to  = toEl.value;
-    if (!Object.keys(S.rates).length) { await loadRates(); }
-    const frRate = S.rates[fr] || (fr==='BYN'?1:null);
-    const toRate = S.rates[to] || (to==='BYN'?1:null);
-    if (!frRate || !toRate) { resEl.textContent = '—'; return; }
-    const result = (amt * frRate) / toRate;
-    resEl.textContent = `${fmtNum(Math.round(result*10000)/10000)} ${to}`;
-    if (rtEl) rtEl.textContent = `1 ${fr} = ${fmtNum(Math.round(frRate/toRate*10000)/10000)} ${to} · НБРБ`;
+async function recalcC() {
+    const a=g('cvA'),f=g('cvF'),t=g('cvT'),r=g('cvR'),ri=g('cvRI');
+    if (!a) return;
+    if (!Object.keys(S.rates).length) await loadRates();
+    const amt=+a.value||0, fr=f.value, to=t.value;
+    const frR=S.rates[fr]||(fr==='BYN'?1:null);
+    const toR=S.rates[to]||(to==='BYN'?1:null);
+    if (!frR||!toR) { if(r) r.textContent='—'; return; }
+    const res=(amt*frR)/toR;
+    if (r) r.textContent=`${fmtN(Math.round(res*10000)/10000)} ${to}`;
+    if (ri) ri.textContent=`1 ${fr} = ${fmtN(Math.round(frR/toR*10000)/10000)} ${to} · НБРБ`;
 }
 
 /* ================================================================
-   GROQ AI ИНТЕГРАЦИЯ — РЕАЛЬНЫЙ API С СТРИМИНГОМ
+   GROQ AI — РЕАЛЬНЫЙ API
    ================================================================ */
-async function askGroqSearch(mode = 'd') {
-    if (!S.query) { toast('Сначала выполните поиск', 'info'); return; }
-    const msg = `Кратко и структурированно ответь на запрос: "${S.query}". Дай ключевые факты, если это фактический вопрос. Если тема широкая — дай обзор. Отвечай по-русски.`;
+async function askGroq(mode='d') {
+    if (!S.q) { toast('Сначала выполните поиск', 'inf'); return; }
+    const msg = `Кратко и структурированно ответь на запрос: "${S.q}". Ключевые факты, практическая польза. Отвечай по-русски, используй Markdown.`;
     await callGroq(msg, mode);
 }
-
-async function sendAI(mode = 'd') {
-    const inId = mode === 'm' ? 'aiInM' : 'aiIn';
-    const el = document.getElementById(inId);
+async function sendAI(mode='d') {
+    const id = mode==='m' ? 'aiInM' : 'aiIn';
+    const el = g(id);
     const msg = el?.value?.trim();
     if (!msg) return;
     el.value = '';
     await callGroq(msg, mode);
 }
 
-/* ----------------------------------------------------------------
-   РЕАЛЬНЫЙ ЗАПРОС К GROQ API (Llama — бесплатно!)
-   ---------------------------------------------------------------- */
-async function callGroq(userMsg, mode = 'd') {
-    if (S.thinking) return;
-
-    // Проверка ключа
+async function callGroq(userMsg, mode='d') {
+    if (S.busy) return;
     if (!CFG.GROQ_KEY || CFG.GROQ_KEY.startsWith('ВСТАВЬТЕ')) {
-        toast('Groq API Key не задан в файле CFG', 'err', 4000);
+        toast('Вставьте Groq API Key в объект CFG', 'err', 5000);
         return;
     }
-
-    S.thinking = true;
-    setAiDot(true);
-
-    const hist = mode === 'm' ? S.chatM : S.chatD;
-    hist.push({ role: 'user', content: userMsg });
+    S.busy = true;
+    setDot(true);
+    const hist = mode==='m' ? S.chatM : S.chatD;
+    hist.push({ role:'user', content: userMsg });
     renderChat(mode);
-
-    // Добавляем пустое AI сообщение (будем заполнять потоково)
-    const aiMsg = { role: 'assistant', content: '', streaming: true };
+    const aiMsg = { role:'assistant', content:'', streaming:true };
     hist.push(aiMsg);
     renderChat(mode, true);
 
-    // Формируем сообщения для API
     const messages = [
-        {
-            role: 'system',
-            content: 'Ты — ИИ-ассистент поисковой системы ZORNET (Беларусь). Отвечай кратко, структурированно и полезно. Используй эмодзи умеренно. Markdown поддерживается.'
-        },
-        ...hist.slice(-12, -1).map(m => ({ role: m.role, content: m.content })),
-        { role: 'user', content: userMsg }
+        { role:'system', content:'Ты — ИИ-ассистент поисковой системы ZORNET. Отвечай кратко, структурированно, используй Markdown.' },
+        ...hist.slice(-12,-1).map(m=>({ role:m.role, content:m.content })),
+        { role:'user', content: userMsg }
     ];
 
     try {
-        // РЕАЛЬНЫЙ ЗАПРОС К GROQ API
         const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CFG.GROQ_KEY}`
-            },
-            body: JSON.stringify({
-                model: CFG.GROQ_MODEL,
-                messages,
-                stream: true,          // Потоковый ответ
-                temperature: 0.6,
-                max_tokens: 1200
-            })
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${CFG.GROQ_KEY}` },
+            body:JSON.stringify({ model:CFG.GROQ_MODEL, messages, stream:true, temperature:.6, max_tokens:1200 })
         });
-
         if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
-            const m = err?.error?.message || `HTTP ${resp.status}`;
-            if (resp.status === 401) throw new Error('Неверный Groq API Key.');
-            if (resp.status === 429) throw new Error('Превышен лимит Groq. Попробуйте позже.');
+            const e = await resp.json().catch(()=>({}));
+            const m = e?.error?.message || `HTTP ${resp.status}`;
+            if (resp.status===401) throw new Error('Неверный Groq API Key.');
+            if (resp.status===429) throw new Error('Превышен лимит Groq. Подождите.');
             throw new Error(m);
         }
-
-        // Обработка SSE потока
         const reader = resp.body.getReader();
-        const dec    = new TextDecoder();
-        let full     = '';
-        let buf      = '';
-
+        const dec = new TextDecoder();
+        let full='', buf='';
         while (true) {
             const { value, done } = await reader.read();
             if (done) break;
-
-            buf += dec.decode(value, { stream: true });
+            buf += dec.decode(value,{stream:true});
             const lines = buf.split('\n');
-            buf = lines.pop() || '';
-
+            buf = lines.pop()||'';
             for (const line of lines) {
                 const t = line.trim();
                 if (!t.startsWith('data: ')) continue;
                 const raw = t.slice(6);
-                if (raw === '[DONE]') break;
+                if (raw==='[DONE]') break;
                 try {
                     const chunk = JSON.parse(raw);
                     const delta = chunk?.choices?.[0]?.delta?.content;
-                    if (delta) {
-                        full += delta;
-                        aiMsg.content = full;
-                        // Обновляем только последний пузырь (без полного перерендера)
-                        updateLastBubble(full, mode, true);
-                    }
+                    if (delta) { full+=delta; aiMsg.content=full; updBubble(full,mode); }
                 } catch(_) {}
             }
         }
-
-        aiMsg.content = full;
-        aiMsg.streaming = false;
-        renderChat(mode);
-        setAiDot(false);
-
+        aiMsg.content=full; aiMsg.streaming=false;
+        renderChat(mode); setDot(false);
     } catch(e) {
-        console.error('[ZORNET] Groq error:', e);
-        hist.pop(); // Убираем пустое сообщение
-        hist.push({ role: 'assistant', content: `❌ ${e.message}`, err: true });
-        renderChat(mode);
-        setAiDot(false);
-        toast(`ИИ: ${e.message}`, 'err', 5000);
-    } finally {
-        S.thinking = false;
-    }
+        console.error('[ZORNET Groq]',e);
+        hist.pop();
+        hist.push({ role:'assistant', content:`Ошибка: ${e.message}`, err:true });
+        renderChat(mode); setDot(false);
+        toast(e.message,'err',5000);
+    } finally { S.busy=false; }
 }
 
-/* ----------------------------------------------------------------
-   Рендер чата
-   ---------------------------------------------------------------- */
-function renderChat(mode, hasStream = false) {
-    const bodyId = mode === 'm' ? 'aiChatM' : 'aiChat';
-    const phId   = mode === 'm' ? 'aiPHM'   : 'aiPH';
-    const body   = document.getElementById(bodyId);
-    const hist   = mode === 'm' ? S.chatM   : S.chatD;
+function renderChat(mode, streaming=false) {
+    const bodyId = mode==='m' ? 'aiChatM' : 'aiChat';
+    const phId   = mode==='m' ? 'aiPHM'   : 'aiPH';
+    const body   = g(bodyId);
+    const hist   = mode==='m' ? S.chatM   : S.chatD;
     if (!body) return;
-
     if (!hist.length) {
-        body.innerHTML = `
-            <div class="ai-placeholder" id="${phId}">
-                <div class="ai-placeholder-ico">✦</div>
-                <p>Задайте вопрос или нажмите кнопку ниже — ИИ проанализирует ваш запрос</p>
-                <button class="ask-btn" onclick="askGroqSearch('${mode}')">✦ Спросить у ИИ</button>
-            </div>`;
+        body.innerHTML = `<div class="ai-ph" id="${phId}">
+            <div class="ai-ph-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <p>Задайте вопрос или нажмите кнопку — ИИ проанализирует ваш запрос</p>
+            <button class="ask-btn" onclick="askGroq('${mode}')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Спросить у ИИ
+            </button>
+        </div>`;
         return;
     }
-
-    body.innerHTML = hist.map((m, i) => {
-        const isUser = m.role === 'user';
-        if (isUser) {
-            return `<div class="chat-msg user"><div class="bubble user">${esc(m.content)}</div></div>`;
-        }
-        const cls = m.streaming ? 'ai stream-cursor streaming-b' : 'ai';
-        const content = m.err
-            ? `<span style="color:#ef4444;">${esc(m.content)}</span>`
-            : fmtAI(m.content) + (m.streaming ? '' : '');
-        return `
-            <div class="chat-msg">
-                <div class="chat-meta"><span style="color:var(--gold);">✦</span> ZORNET AI</div>
-                <div class="bubble ${cls}">${content}</div>
-            </div>`;
+    body.innerHTML = hist.map(m => {
+        if (m.role==='user') return `<div class="chat-msg usr"><div class="bubble usr">${esc(m.content)}</div></div>`;
+        const cls = m.streaming ? 'ai sb' : 'ai';
+        const cnt = m.err
+            ? `<span style="color:#ef4444">${esc(m.content)}</span>`
+            : fmtAI(m.content)+(m.streaming?'':'');
+        return `<div class="chat-msg">
+            <div class="chat-meta">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                ZORNET AI
+                ${m.streaming?'<span class="spin" style="width:8px;height:8px;border-width:1.5px;margin-left:3px"></span>':''}
+            </div>
+            <div class="bubble ${cls}">${cnt}</div>
+        </div>`;
     }).join('');
-
     body.scrollTop = body.scrollHeight;
 }
 
-function updateLastBubble(text, mode, cursor) {
-    const bodyId = mode === 'm' ? 'aiChatM' : 'aiChat';
-    const body   = document.getElementById(bodyId);
+function updBubble(text, mode) {
+    const body = g(mode==='m'?'aiChatM':'aiChat');
     if (!body) return;
-    const bub = body.querySelector('.streaming-b');
-    if (bub) {
-        bub.innerHTML = fmtAI(text);
-        if (cursor) bub.classList.add('stream-cursor');
-        body.scrollTop = body.scrollHeight;
-    }
+    const b = body.querySelector('.sb');
+    if (b) { b.innerHTML=fmtAI(text); b.classList.add('scur'); body.scrollTop=body.scrollHeight; }
 }
 
 function fmtAI(t) {
@@ -1739,259 +1308,171 @@ function fmtAI(t) {
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
         .replace(/\*(.*?)\*/g,'<em>$1</em>')
-        .replace(/`([^`]+)`/g,'<code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:.82em;font-family:monospace;">$1</code>')
-        .replace(/^#{3}\s(.+)$/gm,'<strong style="display:block;color:var(--text);margin:6px 0 2px;font-size:.88rem;">$1</strong>')
-        .replace(/^#{2}\s(.+)$/gm,'<strong style="display:block;color:var(--text);margin:8px 0 3px;font-size:.92rem;">$1</strong>')
-        .replace(/^[-•]\s(.+)$/gm,'<div style="display:flex;gap:5px;margin:2px 0;"><span style="color:var(--gold);flex-shrink:0;">•</span><span>$1</span></div>')
-        .replace(/^(\d+)\.\s(.+)$/gm,'<div style="display:flex;gap:5px;margin:2px 0;"><span style="color:var(--gold);font-weight:700;flex-shrink:0;">$1.</span><span>$2</span></div>')
-        .replace(/\n\n/g,'<br><br>')
-        .replace(/\n/g,'<br>');
+        .replace(/`([^`]+)`/g,'<code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:.78em;font-family:monospace">$1</code>')
+        .replace(/^#{3}\s(.+)$/gm,'<strong style="display:block;color:var(--text);margin:6px 0 2px;font-size:.86rem">$1</strong>')
+        .replace(/^#{2}\s(.+)$/gm,'<strong style="display:block;color:var(--text);margin:8px 0 3px;font-size:.9rem">$1</strong>')
+        .replace(/^[-•]\s(.+)$/gm,'<div style="display:flex;gap:5px;margin:2px 0"><span style="color:var(--gold);flex-shrink:0">•</span><span>$1</span></div>')
+        .replace(/^(\d+)\.\s(.+)$/gm,'<div style="display:flex;gap:5px;margin:2px 0"><span style="color:var(--gold);font-weight:700;flex-shrink:0">$1.</span><span>$2</span></div>')
+        .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
 
-function setAiDot(on) {
-    const d = document.getElementById('aiDot');
-    if (d) d.classList.toggle('active', on);
-}
+function setDot(on) { g('aiDot')?.classList.toggle('on', on); }
 
 /* ================================================================
-   МОБИЛЬНЫЙ AI SHEET
+   BOTTOM SHEET
    ================================================================ */
 function openSheet() {
-    document.getElementById('aiSheet').classList.add('open');
-    document.getElementById('sheetOverlay').classList.add('show');
+    g('aiSheet').classList.add('open');
+    g('shOv').classList.add('show');
     document.body.style.overflow = 'hidden';
-    // Авто-спросить при первом открытии
-    if (S.query && !S.chatM.length) {
-        setTimeout(() => askGroqSearch('m'), 400);
-    }
+    if (S.q && !S.chatM.length) setTimeout(()=>askGroq('m'),380);
 }
 function closeSheet() {
-    document.getElementById('aiSheet').classList.remove('open');
-    document.getElementById('sheetOverlay').classList.remove('show');
+    g('aiSheet').classList.remove('open');
+    g('shOv').classList.remove('show');
     document.body.style.overflow = '';
 }
 
 /* ================================================================
-   ПОДСКАЗКИ ПОИСКА
+   ПОДСКАЗКИ
    ================================================================ */
-let searchHist = JSON.parse(localStorage.getItem('z_hist') || '[]');
-const COMMON = [
-    'новости Беларуси','курс доллара','погода в Минске',
-    'рецепты','программирование','фильмы 2024','BATE Borisov',
-    'Белорусский язык','история Беларуси'
-];
+let zhist = JSON.parse(localStorage.getItem('z_hist')||'[]');
+const COMMON = ['курс доллара','погода Минск','новости Беларуси','рецепты','история Беларуси','Python программирование','фильмы 2024','калькулятор онлайн'];
 
-function onQueryInput(val, sugId) {
-    const el = document.getElementById(sugId);
-    // Zero-click на главной
-    if (sugId === 'homeSug') {
-        const qr = zeroClick(val);
-        renderHomeQuick(qr);
-    }
-    if (val.length < 2) { hideSugEl(el); return; }
+function onInp(val, sugId) {
+    const el = g(sugId);
+    if (sugId==='homeSug') renderHomeQuick(zeroClick(val));
+    if (val.length<2) { hideSugEl(el); return; }
     const v = val.toLowerCase();
-    const items = [
-        ...searchHist.filter(h => h.toLowerCase().includes(v)),
-        ...COMMON.filter(c => c.toLowerCase().includes(v))
-    ].filter((x,i,a) => a.indexOf(x)===i).slice(0,6);
-
+    const items = [...zhist.filter(h=>h.toLowerCase().includes(v)), ...COMMON.filter(c=>c.toLowerCase().includes(v))]
+        .filter((x,i,a)=>a.indexOf(x)===i).slice(0,6);
     if (!items.length) { hideSugEl(el); return; }
-    el.innerHTML = items.map(s => `
-        <div class="sug-item" onclick="pickSug('${esc(s)}')">
-            <span class="sug-icon">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            </span>
+    el.innerHTML = items.map(s=>`
+        <div class="sug-row" onclick="pickSug('${esc(s)}')">
+            <span class="sug-ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <span>${esc(s)}</span>
         </div>`).join('');
     el.classList.remove('hidden');
 }
-
 function pickSug(s) {
-    document.getElementById('homeQ').value = s;
-    document.getElementById('resQ').value  = s;
-    hideSug();
-    doSearch();
+    g('homeQ').value=s; g('resQ').value=s;
+    hideSug(); doSearch();
 }
-
-function hideSug() {
-    hideSugEl(document.getElementById('homeSug'));
-    hideSugEl(document.getElementById('resSug'));
-}
-
-function hideSugEl(el) { if (el) el.classList.add('hidden'); }
-
-document.addEventListener('click', e => {
-    if (!e.target.closest('.search-wrap') && !e.target.closest('.suggestions')) hideSug();
-});
-
-function addHistory(q) {
-    searchHist = [q, ...searchHist.filter(h => h !== q)].slice(0, 30);
-    localStorage.setItem('z_hist', JSON.stringify(searchHist));
+function hideSug() { hideSugEl(g('homeSug')); hideSugEl(g('resSug')); }
+function hideSugEl(el) { if(el) el.classList.add('hidden'); }
+document.addEventListener('click', e => { if (!e.target.closest('.sw')&&!e.target.closest('.sug')) hideSug(); });
+function addHist(q) {
+    zhist=[q,...zhist.filter(h=>h!==q)].slice(0,30);
+    localStorage.setItem('z_hist',JSON.stringify(zhist));
 }
 
 /* ================================================================
-   ПОГОДА (Open-Meteo — бесплатно, без ключа)
+   ПОГОДА — Open-Meteo (бесплатно, без ключа)
    ================================================================ */
-async function loadWeather(lat = 53.9006, lon = 27.559, city = 'Минск') {
-    setWeatherUI('🌤️','…', city);
+async function loadWeather(lat=53.9006,lon=27.559,city='Минск') {
+    setW('—',city);
     try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m&timezone=auto&forecast_days=1`;
-        const r = await fetch(url);
-        if (!r.ok) throw new Error('Open-Meteo error');
-        const d = await r.json();
-        const c = d?.current;
-        if (!c) throw new Error('no data');
-        const temp = Math.round(c.temperature_2m);
-        const ico  = wmoEmoji(c.weathercode);
-        setWeatherUI(ico, `${temp}°C`, city);
-        localStorage.setItem('z_wlat', lat);
-        localStorage.setItem('z_wlon', lon);
-        localStorage.setItem('z_wcity', city);
-    } catch(e) {
-        setWeatherUI('❓','—', 'Недоступно');
-    }
+        const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=auto&forecast_days=1`);
+        if(!r.ok) throw new Error();
+        const d=await r.json();
+        const cur=d?.current;
+        if(!cur) throw new Error();
+        const temp=Math.round(cur.temperature_2m);
+        setW(`${temp}°C`,`${city} · ${wmoD(cur.weathercode)}`);
+        localStorage.setItem('z_wlat',lat);
+        localStorage.setItem('z_wlon',lon);
+        localStorage.setItem('z_wcity',city);
+    } catch(_){ setW('—','Недоступно'); }
 }
-
-function setWeatherUI(ico, temp, city) {
-    set('w-ico', ico); set('w-temp', temp); set('w-city', city);
-    set('sw-ico', ico); set('sw-temp', temp); set('sw-city', city);
+function setW(temp,city) {
+    setT('wTemp',temp);setT('wCity',city);
+    setT('swTemp',temp);setT('swCity',city.split(' · ')[0]);
 }
-
-function set(id, val) { const e = document.getElementById(id); if(e) e.textContent = val; }
-
-function wmoEmoji(code) {
-    if (code===0) return '☀️';
-    if (code<=2)  return '🌤️';
-    if (code===3) return '☁️';
-    if (code<=49) return '🌫️';
-    if (code<=59) return '🌦️';
-    if (code<=69) return '🌧️';
-    if (code<=79) return '❄️';
-    if (code<=82) return '⛈️';
-    if (code<=86) return '🌨️';
-    if (code>=95) return '⛈️';
-    return '🌡️';
+function wmoD(c) {
+    if(c===0) return 'Ясно';if(c<=2) return 'Облачно';if(c===3) return 'Пасмурно';
+    if(c<=49) return 'Туман';if(c<=59) return 'Морось';if(c<=69) return 'Дождь';
+    if(c<=79) return 'Снег';if(c<=82) return 'Ливень';if(c>=95) return 'Гроза';
+    return 'Облачно';
 }
-
 function initWeather() {
-    const lat  = localStorage.getItem('z_wlat');
-    const lon  = localStorage.getItem('z_wlon');
-    const city = localStorage.getItem('z_wcity');
-    if (lat && lon) { loadWeather(+lat, +lon, city); return; }
-    loadWeather(); // Минск по умолчанию
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            p => loadWeather(p.coords.latitude, p.coords.longitude, 'Ваше местоположение'),
-            () => {}
-        );
-    }
+    const lat=localStorage.getItem('z_wlat');
+    const lon=localStorage.getItem('z_wlon');
+    const city=localStorage.getItem('z_wcity');
+    if(lat&&lon){loadWeather(+lat,+lon,city);return;}
+    loadWeather();
+    if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p=>loadWeather(p.coords.latitude,p.coords.longitude,'Ваше местоположение'),()=>{});
 }
-
 function refreshWeather() {
-    const lat  = localStorage.getItem('z_wlat');
-    const lon  = localStorage.getItem('z_wlon');
-    const city = localStorage.getItem('z_wcity');
-    loadWeather(lat ? +lat : 53.9006, lon ? +lon : 27.559, city || 'Минск');
+    const lat=localStorage.getItem('z_wlat');
+    const lon=localStorage.getItem('z_wlon');
+    const city=localStorage.getItem('z_wcity');
+    loadWeather(lat?+lat:53.9006,lon?+lon:27.559,city||'Минск');
 }
-
 async function lookupCity() {
-    const el = document.getElementById('cityIn');
-    const v  = el?.value?.trim();
-    if (!v) return;
-    setWeatherUI('🔄','…', v);
+    const el=g('cityIn');const v=el?.value?.trim();if(!v) return;
+    setW('…',v);
     try {
-        const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(v)}&count=1&language=ru&format=json`;
-        const r = await fetch(url);
-        const d = await r.json();
-        if (!d?.results?.length) { toast(`Город "${v}" не найден`, 'err'); setWeatherUI('❓','—','Не найдено'); return; }
-        const res = d.results[0];
-        await loadWeather(res.latitude, res.longitude, res.name);
-        if (el) el.value = '';
-        toast(`Погода для ${res.name} загружена`, 'ok');
-    } catch(e) {
-        toast('Ошибка поиска города', 'err');
-    }
+        const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(v)}&count=1&language=ru&format=json`);
+        const d=await r.json();
+        if(!d?.results?.length){toast(`Город «${v}» не найден`,'err');setW('—','Не найдено');return;}
+        const res=d.results[0];
+        await loadWeather(res.latitude,res.longitude,res.name);
+        if(el) el.value='';
+        toast(`Погода для ${res.name} загружена`,'ok');
+    } catch(_){toast('Ошибка поиска города','err');}
 }
 
 /* ================================================================
-   КУРСЫ ВАЛЮТ (НБРБ — бесплатно, без ключа)
+   КУРСЫ ВАЛЮТ — НБРБ (бесплатно, без ключа)
    ================================================================ */
 async function loadRates() {
     try {
-        const r = await fetch('https://api.nbrb.by/exrates/rates?periodicity=0');
-        if (!r.ok) throw new Error('НБРБ error');
-        const data = await r.json();
-        S.rates = { BYN: 1 };
-        data.forEach(x => {
-            S.rates[x.Cur_Abbreviation] = x.Cur_OfficialRate / x.Cur_Scale;
-        });
-        const usd = S.rates['USD']?.toFixed(4);
-        const eur = S.rates['EUR']?.toFixed(4);
-        const today = new Date().toLocaleDateString('ru-BY',{day:'2-digit',month:'2-digit'});
-        set('w-usd', usd || '—');
-        set('w-eur', eur || '—');
-        set('sw-usd', usd ? S.rates['USD'].toFixed(2) : '—');
-        set('w-usd-date', `НБРБ · ${today}`);
-        set('w-eur-date', `НБРБ · ${today}`);
-    } catch(e) {
-        set('w-usd','—'); set('w-eur','—'); set('sw-usd','—');
-    }
+        const r=await fetch('https://api.nbrb.by/exrates/rates?periodicity=0');
+        if(!r.ok) throw new Error();
+        const data=await r.json();
+        S.rates={BYN:1};
+        data.forEach(x=>{S.rates[x.Cur_Abbreviation]=x.Cur_OfficialRate/x.Cur_Scale;});
+        const usd=S.rates['USD']?.toFixed(4);
+        const eur=S.rates['EUR']?.toFixed(4);
+        const dt=new Date().toLocaleDateString('ru-BY',{day:'2-digit',month:'2-digit'});
+        setT('wUsd',usd||'—');setT('wEur',eur||'—');
+        setT('swUsd',S.rates['USD']?.toFixed(2)||'—');
+        setT('wUsdD',`НБРБ · ${dt}`);setT('wEurD',`НБРБ · ${dt}`);
+    } catch(_){setT('wUsd','—');setT('wEur','—');setT('swUsd','—');}
 }
 
 /* ================================================================
-   КАЛЬКУЛЯТОР (виджет)
+   КАЛЬКУЛЯТОР
    ================================================================ */
-function calcWidget() {
-    const v = document.getElementById('calcIn')?.value;
-    if (!v?.trim()) { set('calcOut','—'); return; }
-    const r = tryCalc(v.trim());
-    set('calcOut', r !== null ? fmtNum(r) : '?');
+function calcW() {
+    const v=g('calcIn')?.value;
+    if(!v?.trim()){setT('calcOut','—');return;}
+    const r=tryCalc(v.trim());
+    setT('calcOut',r!==null?fmtN(r):'?');
 }
 
 /* ================================================================
-   ВСПОМОГАТЕЛЬНЫЕ
+   УТИЛИТЫ
    ================================================================ */
-function esc(t) {
-    if (!t) return '';
-    const d = document.createElement('div');
-    d.appendChild(document.createTextNode(String(t)));
-    return d.innerHTML;
-}
-
-function fmtNum(n) {
-    if (n === null || n === undefined) return '—';
-    return new Intl.NumberFormat('ru-BY').format(n);
-}
-
-function tryGetDomain(url) {
-    try { return new URL(url).hostname; } catch(_) { return url; }
-}
-
-function toast(msg, type = 'info', dur = 3000) {
-    const c = document.getElementById('toasts');
-    if (!c) return;
-    const ico = { ok:'✅', err:'❌', info:'💡' }[type] || '💡';
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    el.innerHTML = `<span>${ico}</span><span>${esc(msg)}</span>`;
+function g(id){return document.getElementById(id)}
+function setT(id,val){const e=g(id);if(e)e.textContent=val}
+function esc(t){if(!t)return'';const d=document.createElement('div');d.appendChild(document.createTextNode(String(t)));return d.innerHTML}
+function fmtN(n){if(n===null||n===undefined)return'—';return new Intl.NumberFormat('ru-BY').format(n)}
+function toast(msg,type='inf',dur=3000){
+    const c=g('toasts');if(!c)return;
+    const icons={ok:'✓',err:'✕',inf:'i'};
+    const el=document.createElement('div');
+    el.className=`toast ${type}`;
+    el.innerHTML=`<span style="font-weight:700">${icons[type]||'i'}</span><span>${esc(msg)}</span>`;
     c.appendChild(el);
-    setTimeout(() => {
-        el.style.animation = 'toastOut .3s ease forwards';
-        setTimeout(() => el.remove(), 300);
-    }, dur);
+    setTimeout(()=>{el.style.animation='tout .3s ease forwards';setTimeout(()=>el.remove(),300);},dur);
 }
-
-/* ================================================================
-   ГОРЯЧИЕ КЛАВИШИ
-   ================================================================ */
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        closeSheet();
-    }
-    if ((e.ctrlKey||e.metaKey) && e.key === 'k') {
+document.addEventListener('keydown',e=>{
+    if(e.key==='Escape') closeSheet();
+    if((e.ctrlKey||e.metaKey)&&e.key==='k'){
         e.preventDefault();
-        const isRes = document.getElementById('pg-results').style.display === 'flex';
-        document.getElementById(isRes ? 'resQ' : 'homeQ').focus();
+        const isRes=g('pgResults').style.display==='flex';
+        g(isRes?'resQ':'homeQ').focus();
     }
 });
 </script>
